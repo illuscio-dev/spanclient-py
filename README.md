@@ -1,4 +1,4 @@
-# Islelib
+# SpanClient
 
 Spanclient is a declarative http REST client framework,
 similar to Flask / Responder / FastAPI, but for 
