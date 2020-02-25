@@ -1,0 +1,570 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>spanclient._endpoint_wrapper &mdash; spanclient 0.2.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> spanclient
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../test_utilities.html">Test Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_guide.html">API Guide</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">spanclient</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>spanclient._endpoint_wrapper</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for spanclient._endpoint_wrapper</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">marshmallow</span> <span class="kn">import</span> <span class="n">Schema</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">MutableMapping</span><span class="p">,</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">,</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">AsyncGenerator</span><span class="p">,</span>
+    <span class="n">Generator</span><span class="p">,</span>
+    <span class="n">Sequence</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">spantools</span> <span class="kn">import</span> <span class="n">MimeType</span><span class="p">,</span> <span class="n">convert_params_headers</span><span class="p">,</span> <span class="n">MimeTypeTolerant</span>
+<span class="kn">from</span> <span class="nn">spantools.errors_api</span> <span class="kn">import</span> <span class="n">NothingToReturnError</span>
+
+<span class="kn">from</span> <span class="nn">._typing</span> <span class="kn">import</span> <span class="n">ModelType</span>
+<span class="kn">from</span> <span class="nn">._request_obj</span> <span class="kn">import</span> <span class="n">ClientRequest</span><span class="p">,</span> <span class="n">PagingReqClient</span>
+<span class="kn">from</span> <span class="nn">._response_data</span> <span class="kn">import</span> <span class="n">ResponseData</span>
+
+
+<span class="k">class</span> <span class="nc">_PagedHalt</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raised to halt further paging.&quot;&quot;&quot;</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">_EndpointSettings</span><span class="p">:</span>
+    <span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="sd">&quot;&quot;&quot;URL endpoint.&quot;&quot;&quot;</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="sd">&quot;&quot;&quot;HTTP method to use for request.&quot;&quot;&quot;</span>
+    <span class="n">query_params</span><span class="p">:</span> <span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;URL params to use on EVERY endpoint request.&quot;&quot;&quot;</span>
+    <span class="n">headers</span><span class="p">:</span> <span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;HTTP header values to send on EVERY endpoint request.&quot;&quot;&quot;</span>
+    <span class="n">req_schema</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Schema</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;Req body schema to use for decoding request body.&quot;&quot;&quot;</span>
+    <span class="n">resp_codes</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;Single or tuple of valid HTTP response codes.&quot;&quot;&quot;</span>
+    <span class="n">resp_schema</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Schema</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;Marshmallow schema for decoding response object.&quot;&quot;&quot;</span>
+    <span class="n">data_updater</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">ModelType</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Custom updater for mapping new data to existing data object. Takes arguments</span>
+<span class="sd">    ``(current_object, new_object)`` amd returns ``None``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="EndpointWrapper"><a class="viewcode-back" href="../../api_guide.html#spanclient._endpoint_wrapper.EndpointWrapper">[docs]</a><span class="k">class</span> <span class="nc">EndpointWrapper</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wraps endpoints for client. When an attribute is fetched from this class, a partial</span>
+<span class="sd">    version of :func:`EndpointWrapper.generic` is returned with the attribute name</span>
+<span class="sd">    pre-placed in the ``method`` parameter.</span>
+
+<span class="sd">    This class is not accessed directly, but invoked through an instance:</span>
+<span class="sd">    ``spanclient.handles``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__getattribute__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">item</span> <span class="o">!=</span> <span class="s2">&quot;paged&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="s2">&quot;generic&quot;</span><span class="p">),</span> <span class="n">item</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_endpoint_wrapper</span><span class="p">(</span>
+        <span class="n">client</span><span class="p">:</span> <span class="s2">&quot;SpanClient&quot;</span><span class="p">,</span>
+        <span class="n">endpoint_settings</span><span class="p">:</span> <span class="n">_EndpointSettings</span><span class="p">,</span>
+        <span class="n">mimetype_send</span><span class="p">:</span> <span class="n">MimeTypeTolerant</span><span class="p">,</span>
+        <span class="n">mimetype_accept</span><span class="p">:</span> <span class="n">MimeTypeTolerant</span><span class="p">,</span>
+        <span class="n">return_info</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+        <span class="n">kwargs</span><span class="p">:</span> <span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="n">endpoint_settings</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">endpoint_settings</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;req&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">req</span> <span class="o">=</span> <span class="n">ClientRequest</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">endpoint_settings</span><span class="o">=</span><span class="n">endpoint_settings</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">req</span><span class="o">.</span><span class="n">endpoint_settings</span> <span class="o">=</span> <span class="n">endpoint_settings</span>
+
+        <span class="n">req</span><span class="o">.</span><span class="n">mimetype_send</span> <span class="o">=</span> <span class="n">mimetype_send</span>
+        <span class="n">req</span><span class="o">.</span><span class="n">mimetype_accept</span> <span class="o">=</span> <span class="n">mimetype_accept</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;req&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">req</span>
+        <span class="k">if</span> <span class="n">req</span><span class="o">.</span><span class="n">return_info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">req</span><span class="o">.</span><span class="n">return_info</span> <span class="o">=</span> <span class="n">return_info</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">handler</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">req</span><span class="o">.</span><span class="n">executed</span><span class="p">:</span>
+            <span class="n">result_data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">req</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">return_info</span> <span class="ow">or</span> <span class="n">req</span><span class="o">.</span><span class="n">return_info</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result_data</span>
+            <span class="k">elif</span> <span class="n">result_data</span><span class="o">.</span><span class="n">loaded</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result_data</span><span class="o">.</span><span class="n">loaded</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result_data</span><span class="o">.</span><span class="n">resp</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+<div class="viewcode-block" id="EndpointWrapper.generic"><a class="viewcode-back" href="../../api_guide.html#spanclient._endpoint_wrapper.EndpointWrapper.generic">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">generic</span><span class="p">(</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">query_params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">headers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mimetype_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MimeType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mimetype_accept</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MimeType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">req_schema</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Schema</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">resp_codes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="n">resp_schema</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Schema</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data_updater</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">ModelType</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">return_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Decorator that is ACTUALLY called decorating an endpoint method.</span>
+
+<span class="sd">        :param method: HTTP method -- GET, POST, PUT, etc. Filled in automatically</span>
+<span class="sd">            by the decorator invoked, ie: ``@handles.get``</span>
+<span class="sd">        :param endpoint: Endpoint path. Can use f-string syntax for path params.</span>
+<span class="sd">            ex: /wizards/{wizard_id}</span>
+<span class="sd">        :param query_params: URL query params to apply to all requests from this method.</span>
+<span class="sd">        :param headers: HTTP headers to apply to all requests made from this method.</span>
+<span class="sd">        :param mimetype_send: Mimetype to use when encoding content. Added to the</span>
+<span class="sd">            ``&#39;Content-Type&#39;`` header.</span>
+<span class="sd">        :param mimetype_accept: Mimetype to request from server. Added to the</span>
+<span class="sd">            ``&#39;Accept&#39;`` header.</span>
+<span class="sd">        :param req_schema: Schema for dumping request body media.</span>
+<span class="sd">        :param resp_codes: Valid response codes.</span>
+<span class="sd">        :param resp_schema: Schema for loading response body content.</span>
+<span class="sd">        :param data_updater: To use when updating existing data objects in-place.</span>
+<span class="sd">        :param return_info: Whether to return a :class:`ReturnData` instance in place of</span>
+<span class="sd">            the decoded / loaded response body.</span>
+<span class="sd">        :return: Method decorator.</span>
+
+<span class="sd">        :raises StatusMismatchError: When response status does not match ``resp_codes``.</span>
+<span class="sd">        :raises ContentTypeUnknownError: When ``ClientRequest.media`` is not bytes</span>
+<span class="sd">            but an unregistered mimetype is given to ``mimetype_send`` or</span>
+<span class="sd">            ``ClientRequest.mimetype_send``.</span>
+<span class="sd">        :raises ContentEncodeError: When error occurs encoding request body.</span>
+<span class="sd">        :raises ContentDecodeError: When error occurs decoding response body.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">query_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">query_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">headers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="n">convert_params_headers</span><span class="p">(</span><span class="n">query_params</span><span class="p">)</span>
+        <span class="n">convert_params_headers</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">resp_codes</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">resp_codes</span> <span class="o">=</span> <span class="p">(</span><span class="n">resp_codes</span><span class="p">,)</span>
+
+        <span class="n">endpoint_settings</span> <span class="o">=</span> <span class="n">_EndpointSettings</span><span class="p">(</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
+            <span class="n">query_params</span><span class="o">=</span><span class="n">query_params</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+            <span class="n">req_schema</span><span class="o">=</span><span class="n">req_schema</span><span class="p">,</span>
+            <span class="n">resp_codes</span><span class="o">=</span><span class="n">resp_codes</span><span class="p">,</span>
+            <span class="n">resp_schema</span><span class="o">=</span><span class="n">resp_schema</span><span class="p">,</span>
+            <span class="n">data_updater</span><span class="o">=</span><span class="n">data_updater</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+            <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+            <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">client</span><span class="p">:</span> <span class="s2">&quot;SpanClient&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">EndpointWrapper</span><span class="o">.</span><span class="n">_endpoint_wrapper</span><span class="p">(</span>
+                    <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
+                    <span class="n">endpoint_settings</span><span class="o">=</span><span class="n">endpoint_settings</span><span class="p">,</span>
+                    <span class="n">mimetype_send</span><span class="o">=</span><span class="n">mimetype_send</span><span class="p">,</span>
+                    <span class="n">mimetype_accept</span><span class="o">=</span><span class="n">mimetype_accept</span><span class="p">,</span>
+                    <span class="n">return_info</span><span class="o">=</span><span class="n">return_info</span><span class="p">,</span>
+                    <span class="n">handler</span><span class="o">=</span><span class="n">handler</span><span class="p">,</span>
+                    <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
+                    <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="k">return</span> <span class="n">result</span>
+
+            <span class="k">return</span> <span class="n">wrapper</span>
+
+        <span class="k">return</span> <span class="n">decorator</span></div>
+
+<div class="viewcode-block" id="EndpointWrapper.get"><a class="viewcode-back" href="../../api_guide.html#spanclient._endpoint_wrapper.EndpointWrapper.get">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span>
+        <span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">query_params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">headers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mimetype_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MimeType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mimetype_accept</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MimeType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">req_schema</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Schema</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">resp_codes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="n">resp_schema</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Schema</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data_updater</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">return_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;For IDE code-completion. Alias of :func:`EndpointWrapper.generic`&quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="EndpointWrapper.post"><a class="viewcode-back" href="../../api_guide.html#spanclient._endpoint_wrapper.EndpointWrapper.post">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span>
+        <span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">query_params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">headers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mimetype_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MimeType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mimetype_accept</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MimeType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">req_schema</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Schema</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">resp_codes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="n">resp_schema</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Schema</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data_updater</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">return_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;For IDE code-completion. Alias of :func:`EndpointWrapper.generic`&quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="EndpointWrapper.put"><a class="viewcode-back" href="../../api_guide.html#spanclient._endpoint_wrapper.EndpointWrapper.put">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">put</span><span class="p">(</span>
+        <span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">query_params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">headers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mimetype_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MimeType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mimetype_accept</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MimeType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">req_schema</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Schema</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">resp_codes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="n">resp_schema</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Schema</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data_updater</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">return_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;For IDE code-completion. Alias of :func:`EndpointWrapper.generic`&quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="EndpointWrapper.patch"><a class="viewcode-back" href="../../api_guide.html#spanclient._endpoint_wrapper.EndpointWrapper.patch">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">patch</span><span class="p">(</span>
+        <span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">headers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mimetype_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MimeType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mimetype_accept</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MimeType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">req_schema</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Schema</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">resp_codes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="n">resp_schema</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Schema</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data_updater</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">return_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;For IDE code-completion. Alias of :func:`EndpointWrapper.generic`&quot;&quot;&quot;</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span>
+        <span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">headers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mimetype_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MimeType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mimetype_accept</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MimeType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">req_schema</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Schema</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">resp_codes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="n">resp_schema</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Schema</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data_updater</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">return_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="EndpointWrapper.copy"><a class="viewcode-back" href="../../api_guide.html#spanclient._endpoint_wrapper.EndpointWrapper.copy">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span>
+        <span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">headers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mimetype_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MimeType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mimetype_accept</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MimeType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">req_schema</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Schema</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">resp_codes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="n">resp_schema</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Schema</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data_updater</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">return_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;For IDE code-completion. Alias of :func:`EndpointWrapper.generic`&quot;&quot;&quot;</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_paged_init_req</span><span class="p">(</span>
+        <span class="n">client</span><span class="p">:</span> <span class="s2">&quot;SpanClient&quot;</span><span class="p">,</span>
+        <span class="n">offset_params</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">max_pages</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">page_to_fetch</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClientRequest</span><span class="p">:</span>
+        <span class="n">paging</span> <span class="o">=</span> <span class="n">PagingReqClient</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+            <span class="n">offset</span><span class="o">=</span><span class="n">offset_params</span><span class="p">,</span>
+            <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+            <span class="n">max_pages</span><span class="o">=</span><span class="n">max_pages</span><span class="p">,</span>
+            <span class="n">page_to_fetch</span><span class="o">=</span><span class="n">page_to_fetch</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">req</span> <span class="o">=</span> <span class="n">ClientRequest</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">req</span><span class="o">.</span><span class="n">_paging</span> <span class="o">=</span> <span class="n">paging</span>
+        <span class="n">req</span><span class="o">.</span><span class="n">return_info</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="n">req</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_paged_yield_result_items</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">ResponseData</span><span class="p">):</span>
+            <span class="n">page_next</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">resp</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;paging-next&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">loaded</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">items</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">loaded</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">resp</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">page_next</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="n">result</span>
+
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">item</span>
+
+        <span class="k">if</span> <span class="n">page_next</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">_PagedHalt</span><span class="p">(</span><span class="s2">&quot;Stop&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EndpointWrapper.paged"><a class="viewcode-back" href="../../api_guide.html#spanclient._endpoint_wrapper.EndpointWrapper.paged">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">paged</span><span class="p">(</span><span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="n">max_pages</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Turns method into an async generator to seamlessly handle paged responses.</span>
+
+<span class="sd">        :param offset: Beginning offset to use.</span>
+<span class="sd">        :param limit: Default limit to use.</span>
+<span class="sd">        :param max_pages: Maximum number of pages to return when called.</span>
+<span class="sd">        :return: Wrapped function.</span>
+
+<span class="sd">        THIS METHOD MUST BE USED ON TOP OF A GENERIC ``handles`` decorator.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+            <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+            <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span>
+                <span class="n">client</span><span class="p">:</span> <span class="s2">&quot;SpanClient&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">:</span>
+
+                <span class="n">offset_param</span> <span class="o">=</span> <span class="n">offset</span>
+                <span class="n">pages_fetched</span> <span class="o">=</span> <span class="mi">0</span>
+
+                <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="n">req</span> <span class="o">=</span> <span class="n">EndpointWrapper</span><span class="o">.</span><span class="n">_paged_init_req</span><span class="p">(</span>
+                        <span class="n">client</span><span class="p">,</span>
+                        <span class="n">offset_param</span><span class="p">,</span>
+                        <span class="n">limit</span><span class="p">,</span>
+                        <span class="n">max_pages</span><span class="p">,</span>
+                        <span class="n">page_to_fetch</span><span class="o">=</span><span class="n">pages_fetched</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;req&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">req</span>
+
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">handler</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="n">NothingToReturnError</span><span class="p">:</span>
+                        <span class="k">break</span>
+
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">EndpointWrapper</span><span class="o">.</span><span class="n">_paged_yield_result_items</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
+                            <span class="k">yield</span> <span class="n">item</span>
+                    <span class="k">except</span> <span class="n">_PagedHalt</span><span class="p">:</span>
+                        <span class="k">break</span>
+
+                    <span class="n">pages_fetched</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="n">pages_fetched</span> <span class="o">==</span> <span class="n">req</span><span class="o">.</span><span class="n">paging</span><span class="o">.</span><span class="n">max_pages</span><span class="p">:</span>
+                        <span class="k">break</span>
+
+                    <span class="n">offset_param</span> <span class="o">+=</span> <span class="n">req</span><span class="o">.</span><span class="n">paging</span><span class="o">.</span><span class="n">limit</span>
+
+            <span class="k">return</span> <span class="n">wrapper</span>
+
+        <span class="k">return</span> <span class="n">decorator</span></div></div>
+
+
+<span class="n">typing_help</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">if</span> <span class="n">typing_help</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">._client</span> <span class="kn">import</span> <span class="n">SpanClient</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright &#39;2018, Illuscio&#39;
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

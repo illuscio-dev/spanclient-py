@@ -1,0 +1,943 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Quickstart &mdash; spanclient 0.2.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Test Utilities" href="test_utilities.html" />
+    <link rel="prev" title="SpanClient" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> spanclient
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#declare-a-client">Declare a Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#add-a-method">Add a Method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#return-values">Return Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#check-response-code">Check Response Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#handling-response-return">Handling Response / Return</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#request-body">Request Body</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#content-type-encoding">Content-Type Encoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#request-a-content-type">Request a Content-Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#content-type-sniffing">Content-Type Sniffing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#content-type-handlers">Content-Type Handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#path-parameters">Path Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#query-parameters">Query Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#projection-url-params">Projection URL Params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#request-headers">Request Headers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#request-body-schema">Request Body Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#response-body-schema">Response Body Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#update-data-in-place">Update Data In-Place</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#response-errors">Response Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#paged-endpoints">Paged Endpoints</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="test_utilities.html">Test Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_guide.html">API Guide</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">spanclient</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Quickstart</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/quickstart.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="module-spanclient"></span><div class="section" id="quickstart">
+<h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
+<p>All examples will be conducted on <a class="reference external" href="https://www.mockable.io/swagger/index.html?url=https%3A%2F%2Filluscio.mockable.io%3Fopenapi#/illuscio">mockable.io</a>, a publicly available mock api creator.</p>
+<div class="section" id="declare-a-client">
+<h2>Declare a Client<a class="headerlink" href="#declare-a-client" title="Permalink to this headline">¶</a></h2>
+<p>Clients are declared by subclassing the <a class="reference internal" href="api_guide.html#spanclient.SpanClient" title="spanclient.SpanClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpanClient</span></code></a> class.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">spanclient</span> <span class="kn">import</span> <span class="n">SpanClient</span>
+
+<span class="k">class</span> <span class="nc">HogwartsClient</span><span class="p">(</span><span class="n">SpanClient</span><span class="p">):</span>
+    <span class="n">DEFAULT_HOST_NAME</span> <span class="o">=</span>  <span class="s2">&quot;illuscio.mockable.io&quot;</span>
+    <span class="n">DEFAULT_PROTOCOL</span> <span class="o">=</span> <span class="s2">&quot;https&quot;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">DEFAULT_HOST_NAME</span></code> does not need to be set, but will require the user to pass a value
+for <code class="docutils literal notranslate"><span class="pre">'hostname='</span></code> to the init of <code class="docutils literal notranslate"><span class="pre">HogwartsClient</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">DEFAULT_PROTOCOL</span></code> will be <code class="docutils literal notranslate"><span class="pre">'http'</span></code> if none is set.</p>
+</div>
+<div class="section" id="add-a-method">
+<h2>Add a Method<a class="headerlink" href="#add-a-method" title="Permalink to this headline">¶</a></h2>
+<p>To add an endpoint method we decorate it with <code class="docutils literal notranslate"><span class="pre">&#64;handles.{method}</span></code>. Lets set up a
+method for fetching text from an endpoint that returns the name of a hogwarts house for
+us to be sorted into.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">spanclient</span> <span class="kn">import</span> <span class="n">handles</span><span class="p">,</span> <span class="n">ClientRequest</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="n">REQ</span> <span class="o">=</span> <span class="n">SpanClient</span><span class="o">.</span><span class="n">REQ</span>
+
+<span class="k">class</span> <span class="nc">HogwartsClient</span><span class="p">(</span><span class="n">SpanClient</span><span class="p">):</span>
+    <span class="n">DEFAULT_HOST_NAME</span> <span class="o">=</span>  <span class="s2">&quot;illuscio.mockable.io&quot;</span>
+    <span class="n">DEFAULT_PROTOCOL</span> <span class="o">=</span> <span class="s2">&quot;https&quot;</span>
+
+    <span class="nd">@handles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/sortinghat&quot;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">sort_house</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span><span class="o">=</span><span class="n">REQ</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+<p>That’s all! The client is ready for use!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+
+<span class="c1"># this is out main async function</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+
+    <span class="c1"># declare our client</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">HogwartsClient</span><span class="p">()</span>
+
+    <span class="c1"># enter a context with our client. Upon exiting, the connection pool used by</span>
+    <span class="c1"># aiohttp will be closed.</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="c1"># invoke our method</span>
+        <span class="n">house</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">sort_house</span><span class="p">()</span>
+        <span class="c1"># pretty-print the resulting loaded data.</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;HOUSE:&quot;</span><span class="p">,</span> <span class="n">house</span><span class="p">)</span>
+
+<span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+<span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">HOUSE</span><span class="p">:</span> <span class="n">Ravenclaw</span>
+</pre></div>
+</div>
+<p>By default, the decoded response body is used as the return value of decorated
+method.</p>
+<p>The full url invoked in this example is
+<code class="docutils literal notranslate"><span class="pre">'https://illuscio.mockable.io/sortinghat'</span></code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">{method}</span></code> can be anything, but there are a few stubbed-out methods like
+<code class="docutils literal notranslate"><span class="pre">.get()</span></code> for IDE code completion. The actual decorator that is invoked is always
+<code class="docutils literal notranslate"><span class="pre">handles.generic()</span></code>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All methods must include a <code class="docutils literal notranslate"><span class="pre">req</span></code> keyword-only argument, which will be passed a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ClientReq</span></code> by the decorator. To make it clear that this value does not need
+to be set by the end-user, a default value of SpanClient.REQ can be used. This value
+is not actually passed in, but replaced by a fresh <a class="reference internal" href="api_guide.html#spanclient.ClientRequest" title="spanclient.ClientRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientRequest</span></code></a> object
+each time the method is invoked.</p>
+</div>
+</div>
+<div class="section" id="return-values">
+<h2>Return Values<a class="headerlink" href="#return-values" title="Permalink to this headline">¶</a></h2>
+<p>For most returns, no explicit handling of the response is required. All boilerplate is
+handled by the decorator, and the return value is pulled from the decoded message body.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># biolerplate declaration of the client is removed in this and all subsequent</span>
+<span class="c1"># examples for clarity.</span>
+
+<span class="nd">@handles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/wizards&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">list_wizards</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>Run it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># all boilerplate for setting up and running the client in-context is removed here.</span>
+<span class="c1"># this code can be dropped into the first example above for testing.</span>
+
+<span class="n">wizards</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">list_wizards</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WIZARDS:&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">wizards</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">WIZARDS</span><span class="p">:</span>
+<span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;eb340f70-524f-4459-a5ae-d7214f9780ca&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Harry Potter&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;house&quot;</span><span class="p">:</span> <span class="s2">&quot;Gryffindor&quot;</span>
+    <span class="p">},</span>
+    <span class="o">...</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;05b289cc-9164-4b2d-ac23-badefbc9a4cd&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Luna Lovegood&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;house&quot;</span><span class="p">:</span> <span class="s2">&quot;Ravenclaw&quot;</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="check-response-code">
+<h2>Check Response Code<a class="headerlink" href="#check-response-code" title="Permalink to this headline">¶</a></h2>
+<p>By default, responses are checked for 200 status code. To alter the expected response
+code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@handles</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/house/gryffindor/point&quot;</span><span class="p">,</span> <span class="n">resp_codes</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">one_point_to_gryffindor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># adds 1 point to gryffindor</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>Run it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">points</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">one_point_to_gryffindor</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;RESP:&quot;</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">RESP</span><span class="p">:</span> <span class="mi">542</span>
+</pre></div>
+</div>
+<p>If there are multiple acceptable codes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@handles</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/house/gryffindor/point&quot;</span><span class="p">,</span> <span class="n">resp_codes</span><span class="o">=</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">,</span> <span class="mi">202</span><span class="p">))</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">one_point_to_gryffindor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># adds 1 point to gryffindor</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="handling-response-return">
+<h2>Handling Response / Return<a class="headerlink" href="#handling-response-return" title="Permalink to this headline">¶</a></h2>
+<p>Directly execute and handle a response:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@handles</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/house/gryffindor/point&quot;</span><span class="p">,</span> <span class="n">resp_codes</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">one_point_to_gryffindor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="c1"># adds 1 point to gryffindor</span>
+    <span class="n">result</span><span class="p">:</span> <span class="n">ResponseData</span> <span class="o">=</span> <span class="k">await</span> <span class="n">req</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">decoded</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We call <a class="reference internal" href="api_guide.html#spanclient.ClientRequest.execute" title="spanclient.ClientRequest.execute"><code class="xref py py-func docutils literal notranslate"><span class="pre">ClientRequest.execute()</span></code></a> to execute the request directly in the method.
+This returns a <code class="xref py py-class docutils literal notranslate"><span class="pre">ResponseData</span></code> object which we can use to determine a return.
+In this case, we want to cast the points to an <code class="docutils literal notranslate"><span class="pre">int</span></code>.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>When <a class="reference internal" href="api_guide.html#spanclient.ClientRequest.execute" title="spanclient.ClientRequest.execute"><code class="xref py py-func docutils literal notranslate"><span class="pre">ClientRequest.execute()</span></code></a> is called inside a method, the return of the
+method is used as the return value of the method, unlike previous examples where the
+return value is pulled automatically from the response body.</p>
+</div>
+</div>
+<div class="section" id="request-body">
+<h2>Request Body<a class="headerlink" href="#request-body" title="Permalink to this headline">¶</a></h2>
+<p>The request body can be set via the <code class="docutils literal notranslate"><span class="pre">ClientRequest.media</span></code> attribute for unserialized
+data or <code class="docutils literal notranslate"><span class="pre">ClientRequest.content</span></code> for serialized <code class="docutils literal notranslate"><span class="pre">bytes</span></code> data.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@handles</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/wizards&quot;</span><span class="p">,</span> <span class="n">resp_valid_codes</span><span class="o">=</span><span class="mi">201</span><span class="p">,)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">add_wizard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wizard</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># This endpoint assigns the house and wizard ID to a new student.</span>
+    <span class="n">req</span><span class="o">.</span><span class="n">media</span> <span class="o">=</span> <span class="n">wizard</span>
+</pre></div>
+</div>
+<p>Now when we call it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wizard</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Cedric Diggory&quot;</span><span class="p">}</span>
+<span class="n">wizard</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">add_wizard</span><span class="p">(</span><span class="n">wizard</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ADDED:&quot;</span><span class="p">,</span> <span class="n">wizard</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ADDED</span><span class="p">:</span>
+<span class="p">{</span>
+    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;30817cb1-4fd2-4f50-b258-4f225127f39c&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Cedric Diggory&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;house&quot;</span><span class="p">:</span> <span class="s2">&quot;Hufflepuff&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By default, <code class="docutils literal notranslate"><span class="pre">list</span></code> and <code class="docutils literal notranslate"><span class="pre">dict</span></code> objects are serialized as
+<code class="docutils literal notranslate"><span class="pre">'application/json'</span></code>, and <code class="docutils literal notranslate"><span class="pre">str</span></code> objects are serialized as <code class="docutils literal notranslate"><span class="pre">'text/plain'</span></code></p>
+</div>
+</div>
+<div class="section" id="content-type-encoding">
+<h2>Content-Type Encoding<a class="headerlink" href="#content-type-encoding" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="api_guide.html#spanclient.SpanClient" title="spanclient.SpanClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpanClient</span></code></a> natively handles the following http body mimetypes:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>JSON (application/json)</p></li>
+<li><p>YAML (application/yaml)</p></li>
+<li><p>BSON (application/bson)</p></li>
+<li><p>TEXT (text/plain)</p></li>
+</ul>
+</div></blockquote>
+<p>Each of the supported mimetypes is represented as a string Enum in <a class="reference internal" href="api_guide.html#spanclient.MimeType" title="spanclient.MimeType"><code class="xref py py-class docutils literal notranslate"><span class="pre">MimeType</span></code></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">spanserver</span> <span class="kn">import</span> <span class="n">MimeType</span><span class="p">,</span>
+
+<span class="nd">@handles</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/wizards&quot;</span><span class="p">,</span> <span class="n">mimetype_send</span><span class="o">=</span><span class="n">MimeType</span><span class="o">.</span><span class="n">YAML</span><span class="p">,</span> <span class="n">resp_valid_codes</span><span class="o">=</span><span class="mi">201</span><span class="p">,)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">add_wizard</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">wizard</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="c1"># This endpoint assigns the house and wizard ID to a new student.</span>
+    <span class="n">req</span><span class="o">.</span><span class="n">media</span> <span class="o">=</span> <span class="n">wizard</span>
+</pre></div>
+</div>
+<p>Now the request body will be encoded as yaml instead of json, and the <code class="docutils literal notranslate"><span class="pre">'Content-Type'</span></code>
+header will be set to <code class="docutils literal notranslate"><span class="pre">'application/yaml'</span></code></p>
+<p>Content mime-type can also be set at the request level if it needs to be dynamically
+determined:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@handles</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/wizards&quot;</span><span class="p">,</span> <span class="n">resp_valid_codes</span><span class="o">=</span><span class="mi">201</span><span class="p">,)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">add_wizard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wizard</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># This endpoint assigns the house and wizard ID to a new student.</span>
+    <span class="n">req</span><span class="o">.</span><span class="n">media</span> <span class="o">=</span> <span class="n">wizard</span>
+    <span class="n">req</span><span class="o">.</span><span class="n">mimetype_send</span><span class="o">=</span><span class="n">MimeType</span><span class="o">.</span><span class="n">YAML</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="request-a-content-type">
+<h2>Request a Content-Type<a class="headerlink" href="#request-a-content-type" title="Permalink to this headline">¶</a></h2>
+<p>Request a return mimetype from the server.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@handles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/wizards&quot;</span><span class="p">,</span> <span class="n">mimetype_accept</span><span class="o">=</span><span class="n">MimeType</span><span class="o">.</span><span class="n">YAML</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">add_wizard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">'Accept'</span></code> header will be set to <code class="docutils literal notranslate"><span class="pre">'application/yaml'</span></code>, and services based on
+<a class="reference external" href="https://illuscio-dev-spanreed-py.readthedocs-hosted.com/en/latest/">spanserver</a> will return yaml-encoded data.</p>
+</div>
+<div class="section" id="content-type-sniffing">
+<h2>Content-Type Sniffing<a class="headerlink" href="#content-type-sniffing" title="Permalink to this headline">¶</a></h2>
+<p>When <code class="docutils literal notranslate"><span class="pre">'Content-Type'</span></code> is not specified in the response header, <a class="reference internal" href="api_guide.html#spanclient.SpanClient" title="spanclient.SpanClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpanClient</span></code></a>
+will attempt to decode the content with every available decoder, until one does not
+throw an error.</p>
+<p>When registering custom encoders, make sure that they throw errors when they should.
+For instance, json will decode raw strings to a str object, so the built-in json
+decoder throws an error when the resulting object is not a dictionary or list.</p>
+<p>Request body mimetype is resolved in the following order:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Mimetype set to <a class="reference internal" href="api_guide.html#spanclient.ClientRequest.mimetype_send" title="spanclient.ClientRequest.mimetype_send"><code class="xref py py-func docutils literal notranslate"><span class="pre">ClientRequest.mimetype_send()</span></code></a></p></li>
+<li><p>JSON for <code class="docutils literal notranslate"><span class="pre">dict</span></code> / <code class="docutils literal notranslate"><span class="pre">list</span></code> media values</p></li>
+<li><p>TEXT for <code class="docutils literal notranslate"><span class="pre">str</span></code> media.</p></li>
+<li><p>No action for <code class="docutils literal notranslate"><span class="pre">bytes</span></code> media values.</p></li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="content-type-handlers">
+<h2>Content-Type Handlers<a class="headerlink" href="#content-type-handlers" title="Permalink to this headline">¶</a></h2>
+<p>Custom encoders and decoders can be registered with the api, and can replace the default
+ones. Let’s register a couple to handle text/csv content.</p>
+<p>An encoder must take in a data object and turn it into bytes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
+
+
+<span class="k">def</span> <span class="nf">csv_encode</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+    <span class="n">encoded</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictWriter</span><span class="p">(</span><span class="n">encoded</span><span class="p">,</span> <span class="n">fieldnames</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+    <span class="n">writer</span><span class="o">.</span><span class="n">writeheader</span><span class="p">()</span>
+    <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">encoded</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Decoders must take in bytes and return python objects.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">csv_decode</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+    <span class="n">csv_file</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+    <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">csv_file</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">row</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Now we can register them when declaring our client:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">spanclient</span> <span class="kn">import</span> <span class="n">register_mimetype</span>
+
+<span class="k">class</span> <span class="nc">APIClient</span><span class="p">(</span><span class="n">SpanClient</span><span class="p">):</span>
+    <span class="n">register_mimetype</span><span class="p">(</span><span class="s2">&quot;text/csv&quot;</span><span class="p">,</span> <span class="n">encoder</span><span class="o">=</span><span class="n">csv_encode</span><span class="p">,</span> <span class="n">decoder</span><span class="o">=</span><span class="n">csv_decode</span><span class="p">)</span>
+
+    <span class="nd">@handles</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/csv&quot;</span><span class="p">,</span> <span class="n">mimetype_send</span><span class="o">=</span><span class="s2">&quot;text/csv&quot;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">csv_roundtrip</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">csv_data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="o">*</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+        <span class="n">req</span><span class="o">.</span><span class="n">media</span> <span class="o">=</span> <span class="n">csv_data</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="path-parameters">
+<h2>Path Parameters<a class="headerlink" href="#path-parameters" title="Permalink to this headline">¶</a></h2>
+<p>Like <a class="reference external" href="https://illuscio-dev-spanreed-py.readthedocs-hosted.com/en/latest/">spanserver</a>, spanclient allows f-string-like syntax for declaring path
+parameters. Path parameters can be set via the <a class="reference internal" href="api_guide.html#spanclient.ClientRequest" title="spanclient.ClientRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientRequest</span></code></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@handles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/wizard/</span><span class="si">{wizard_id}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">fetch_wizard</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">wizard_id</span><span class="p">:</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="n">req</span><span class="o">.</span><span class="n">path_params</span><span class="p">[</span><span class="s2">&quot;wizard_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wizard_id</span>
+</pre></div>
+</div>
+<p>Non-string params are cast via <code class="docutils literal notranslate"><span class="pre">str()</span></code> when being inserted into the url. Lets try it
+out:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load our wizard id into a UUID object</span>
+<span class="n">wizard_id</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="s2">&quot;05b289cc-9164-4b2d-ac23-badefbc9a4cd&quot;</span><span class="p">)</span>
+<span class="n">wizard</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">fetch_wizard</span><span class="p">(</span><span class="n">wizard_id</span><span class="p">)</span>
+
+<span class="c1"># pretty-print the resulting loaded data.</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WIZARD:&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">wizard</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Output</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">WIZARD</span><span class="p">:</span>
+<span class="p">{</span>
+    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;05b289cc-9164-4b2d-ac23-badefbc9a4cd&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Luna Lovegood&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;house&quot;</span><span class="p">:</span> <span class="s2">&quot;Ravenclaw&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The full url invoked in this example is
+<code class="docutils literal notranslate"><span class="pre">'https://illuscio.mockable.io/wizard/05b289cc-9164-4b2d-ac23-badefbc9a4cd'</span></code></p>
+</div>
+<div class="section" id="query-parameters">
+<h2>Query Parameters<a class="headerlink" href="#query-parameters" title="Permalink to this headline">¶</a></h2>
+<p>Query parameters are handled identically to path parameters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@handles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/wizards&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">list_house</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">house</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+    <span class="n">req</span><span class="o">.</span><span class="n">query_params</span><span class="p">[</span><span class="s2">&quot;house&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">house</span>
+</pre></div>
+</div>
+<p>We invoke it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wizards</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">list_house</span><span class="p">(</span><span class="s2">&quot;Gryffindor&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;HOUSE GRYFFINDOR:&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">wizards</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">HOUSE</span> <span class="n">GRYFFINDOR</span><span class="p">:</span>
+<span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;eb340f70-524f-4459-a5ae-d7214f9780ca&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Harry Potter&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;house&quot;</span><span class="p">:</span> <span class="s2">&quot;Gryffindor&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;0a810fcb-75cd-4d40-be7e-0a3208ec05fd&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Hermione Granger&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;house&quot;</span><span class="p">:</span> <span class="s2">&quot;Gryffindor&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;230173db-dfaa-4296-a8e6-510aabe34ecb&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Ron Weasley&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;house&quot;</span><span class="p">:</span> <span class="s2">&quot;Gryffindor&quot;</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>The full url invoked in this example is
+<code class="docutils literal notranslate"><span class="pre">'http://illuscio.mockable.io/wizards%3Fhouse=Gryffindor'</span></code></p>
+<p>You can also set query params on the method decorator. These will be added every time
+the method is invoked:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@handles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/wizards&quot;</span><span class="p">,</span> <span class="n">query_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;house&quot;</span><span class="p">:</span> <span class="s2">&quot;Gryffindor&quot;</span><span class="p">})</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">list_gryffindor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>Which would be called for the same result:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wizards</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">list_gryffindor</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="projection-url-params">
+<h2>Projection URL Params<a class="headerlink" href="#projection-url-params" title="Permalink to this headline">¶</a></h2>
+<p>Natively handle <a href="#id1"><span class="problematic" id="id2">`SpanServer's projection convention`_</span></a> for slimming down response
+payloads.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@handles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/wizards&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">list_wizards</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+    <span class="n">req</span><span class="o">.</span><span class="n">projection</span><span class="p">[</span><span class="s2">&quot;house&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+</div>
+<p>When invoked, the <code class="docutils literal notranslate"><span class="pre">'house'</span></code> field will be suppressed:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wizards</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">list_wizards</span><span class="p">()</span>
+<span class="c1"># pretty-print the resulting loaded data.</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WIZARDS:&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">wizards</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">WIZARDS</span><span class="p">:</span>
+<span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;eb340f70-524f-4459-a5ae-d7214f9780ca&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Harry Potter&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;0a810fcb-75cd-4d40-be7e-0a3208ec05fd&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Hermione Granger&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;230173db-dfaa-4296-a8e6-510aabe34ecb&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Ron Weasley&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;245dca2d-1c72-495e-99a8-08c2808325b8&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Draco Malfoy&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;30817cb1-4fd2-4f50-b258-4f225127f39c&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Cedric Diggory&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;05b289cc-9164-4b2d-ac23-badefbc9a4cd&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Luna Lovegood&quot;</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Use the same method to allow users to define their own projection:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@handles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/wizards&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">list_wizards</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">projection</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+    <span class="k">if</span> <span class="n">projection</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">req</span><span class="o">.</span><span class="n">projection</span> <span class="o">=</span> <span class="n">projection</span>
+</pre></div>
+</div>
+<p>Invoke it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">projection</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">wizards</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">list_wizards</span><span class="p">(</span><span class="n">projection</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WIZARDS:&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">wizards</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">WIZARDS</span><span class="p">:</span>
+<span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Harry Potter&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Hermione Granger&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Ron Weasley&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Draco Malfoy&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Cedric Diggory&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Luna Lovegood&quot;</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="request-headers">
+<h2>Request Headers<a class="headerlink" href="#request-headers" title="Permalink to this headline">¶</a></h2>
+<p>Headers are handled identically to path and query params. Either:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@handles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/wizards&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">fetch_wizards</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">some_value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">req</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;some-header&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">some_value</span>
+</pre></div>
+</div>
+<p>Or:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@handles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/wizards&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;some-header&quot;</span><span class="p">:</span> <span class="s2">&quot;some-value&quot;</span><span class="p">})</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">fetch_wizards</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="request-body-schema">
+<h2>Request Body Schema<a class="headerlink" href="#request-body-schema" title="Permalink to this headline">¶</a></h2>
+<p>Let’s make a marshmallow schema for our wizard info:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">WizardSchema</span><span class="p">(</span><span class="n">marshmallow</span><span class="o">.</span><span class="n">Schema</span><span class="p">):</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">marshmallow</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">UUID</span><span class="p">()</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">marshmallow</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Str</span><span class="p">()</span>
+    <span class="n">house</span> <span class="o">=</span> <span class="n">marshmallow</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Str</span><span class="p">()</span>
+
+    <span class="nd">@marshmallow</span><span class="o">.</span><span class="n">validates</span><span class="p">(</span><span class="s2">&quot;house&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">is_valid_house</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+        <span class="n">houses</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Gryffindor&quot;</span><span class="p">,</span> <span class="s2">&quot;Slytherin&quot;</span><span class="p">,</span> <span class="s2">&quot;Hufflepuff&quot;</span><span class="p">,</span> <span class="s2">&quot;Ravenclaw&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">houses</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">marshmallow</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{value}</span><span class="s2"> is not a hogwarts house&quot;</span>
+            <span class="p">)</span>
+</pre></div>
+</div>
+<p>We can use this schema to serialize our request body:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@handles</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+    <span class="s2">&quot;/wizards&quot;</span><span class="p">,</span> <span class="n">req_schema</span><span class="o">=</span><span class="n">WizardSchema</span><span class="p">(</span><span class="n">only</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]),</span> <span class="n">resp_valid_codes</span><span class="o">=</span><span class="mi">201</span>
+<span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">add_wizard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wizard</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># This endpoint assigns the house and wizard ID. We</span>
+    <span class="n">req</span><span class="o">.</span><span class="n">media</span> <span class="o">=</span> <span class="n">wizard</span>
+</pre></div>
+</div>
+<p>When we invoke it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wizard</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Cedric Diggory&quot;</span><span class="p">}</span>
+<span class="n">wizard</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">add_wizard</span><span class="p">(</span><span class="n">wizard</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ADDED:&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">wizard</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Output</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ADDED</span><span class="p">:</span>
+<span class="p">{</span>
+    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;30817cb1-4fd2-4f50-b258-4f225127f39c&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Cedric Diggory&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;house&quot;</span><span class="p">:</span> <span class="s2">&quot;Hufflepuff&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="response-body-schema">
+<h2>Response Body Schema<a class="headerlink" href="#response-body-schema" title="Permalink to this headline">¶</a></h2>
+<p>In the last example, the uuid came back as a string. We can register a response body
+schema to load it when the response is returned.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@handles</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+    <span class="s2">&quot;/wizards&quot;</span><span class="p">,</span>
+    <span class="n">req_schema</span><span class="o">=</span><span class="n">WizardSchema</span><span class="p">(</span><span class="n">only</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]),</span>
+    <span class="n">resp_valid_codes</span><span class="o">=</span><span class="mi">201</span><span class="p">,</span>
+    <span class="n">resp_schema</span><span class="o">=</span><span class="n">WizardSchema</span><span class="p">()</span>
+<span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">add_wizard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wizard</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># This endpoint assigns the house and wizard ID to a new student.</span>
+    <span class="n">req</span><span class="o">.</span><span class="n">media</span> <span class="o">=</span> <span class="n">wizard</span>
+</pre></div>
+</div>
+<p>Now when we call it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wizard</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Cedric Diggory&quot;</span><span class="p">}</span>
+<span class="n">wizard</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">add_wizard</span><span class="p">(</span><span class="n">wizard</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ADDED:&quot;</span><span class="p">,</span> <span class="n">wizard</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ADDED</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">UUID</span><span class="p">(</span><span class="s1">&#39;30817cb1-4fd2-4f50-b258-4f225127f39c&#39;</span><span class="p">)</span><span class="o">...</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The uuid object has been deserialized.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For those who wish to deserialize from and serialize to <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html">dataclasses</a>, there is a
+sister project, <a class="reference external" href="https://illuscio-dev-grahamcracker-py.readthedocs-hosted.com/en/latest/">Grahamcracker</a>, specifically written for use with the <a href="#id3"><span class="problematic" id="id4">`spanreed`_</span></a>
+family.</p>
+</div>
+</div>
+<div class="section" id="update-data-in-place">
+<h2>Update Data In-Place<a class="headerlink" href="#update-data-in-place" title="Permalink to this headline">¶</a></h2>
+<p>In the above example, the method returns a NEW data object when the wizard is posted,
+but we can update objects IN-PLACE if we want:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@handles</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+    <span class="s2">&quot;/wizards&quot;</span><span class="p">,</span>
+    <span class="n">req_schema</span><span class="o">=</span><span class="n">WizardSchema</span><span class="p">(</span><span class="n">only</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]),</span>
+    <span class="n">resp_valid_codes</span><span class="o">=</span><span class="mi">201</span><span class="p">,</span>
+    <span class="n">resp_schema</span><span class="o">=</span><span class="n">WizardSchema</span><span class="p">()</span>
+<span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">add_wizard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wizard</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># This endpoint assigns the house and wizard ID. We</span>
+    <span class="n">req</span><span class="o">.</span><span class="n">media</span> <span class="o">=</span> <span class="n">wizard</span>
+    <span class="n">req</span><span class="o">.</span><span class="n">update_obj</span> <span class="o">=</span> <span class="n">wizard</span>
+</pre></div>
+</div>
+<p>Run it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wizard</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Cedric Diggory&quot;</span><span class="p">}</span>
+<span class="c1"># wizard is updated in-place</span>
+<span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">add_wizard</span><span class="p">(</span><span class="n">wizard</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ADDED:&quot;</span><span class="p">,</span> <span class="n">wizard</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ADDED</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Cedric Diggory&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="s1">&#39;house&#39;</span><span class="p">:</span> <span class="s1">&#39;Hufflepuff&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>SpanClient uses a library called <a class="reference external" href="https://illuscio-dev-gemma-py.readthedocs-hosted.com/en/latest/">Gemma</a> to automatically update objects in-place.
+However, there are a few limitations to it’s capabilities:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The Structure of the existing and incoming objects must be the same: for
+instance key1.nested1 must exist on both objects.</p></li>
+<li><p>It does not matter if the “addresses” are attributes or keys, both are
+discoverable, so a dataclass can be updated by a dict, as long as their field
+names are identical.</p></li>
+<li><p>Nested objects like dicts or dataclasses are updated in-place.</p></li>
+<li><p>Nested sequences are wholly replaced. If your data has a list of sub-data,
+the list is not updated in-place, it is replaced with a new list.</p></li>
+</ul>
+</div></blockquote>
+</div>
+<p>Assign a custom updater if something more complicated is needed:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">update_wizard</span><span class="p">(</span><span class="n">current</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">current</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+    <span class="n">current</span><span class="p">[</span><span class="s2">&quot;house&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new</span><span class="p">[</span><span class="s2">&quot;house&quot;</span><span class="p">]</span>
+
+<span class="nd">@handles</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+    <span class="s2">&quot;/wizards&quot;</span><span class="p">,</span>
+    <span class="n">req_schema</span><span class="o">=</span><span class="n">WizardSchema</span><span class="p">(</span><span class="n">only</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]),</span>
+    <span class="n">resp_valid_codes</span><span class="o">=</span><span class="mi">201</span><span class="p">,</span>
+    <span class="n">resp_schema</span><span class="o">=</span><span class="n">WizardSchema</span><span class="p">(),</span>
+    <span class="n">data_updater</span><span class="o">=</span><span class="n">update_wizard</span>
+<span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">add_wizard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wizard</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># This endpoint assigns the house and wizard ID. We</span>
+    <span class="n">req</span><span class="o">.</span><span class="n">media</span> <span class="o">=</span> <span class="n">wizard</span>
+    <span class="n">req</span><span class="o">.</span><span class="n">update_obj</span> <span class="o">=</span> <span class="n">wizard</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="response-errors">
+<h2>Response Errors<a class="headerlink" href="#response-errors" title="Permalink to this headline">¶</a></h2>
+<p>When we get a response code we were not expecting, a generic
+<a class="reference internal" href="api_guide.html#spanclient.StatusMismatchError" title="spanclient.StatusMismatchError"><code class="xref py py-class docutils literal notranslate"><span class="pre">StatusMismatchError</span></code></a> is returned.</p>
+<p>Spanclient is designed to work seamlessly with <a class="reference external" href="https://illuscio-dev-spanreed-py.readthedocs-hosted.com/en/latest/">spanserver</a> and understands
+it’ error conventions. Errors returned in response headers that conform to the
+<a href="#id5"><span class="problematic" id="id6">`spanreed`_</span></a> spec will be raised as native errors.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@handles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/wizards/slytherin/good&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">good_slytherins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>Run it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wizards</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">good_slytherins</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+    <span class="o">...</span>
+<span class="n">spantools</span><span class="o">.</span><span class="n">errors_api</span><span class="o">.</span><span class="n">_classes</span><span class="o">.</span><span class="n">NothingToReturnError</span><span class="p">:</span> <span class="n">There</span> <span class="n">are</span> <span class="n">no</span> <span class="n">good</span> <span class="n">Slytherins</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Register custom errors while declaring your client by subclassing
+<a class="reference internal" href="api_guide.html#spanclient.errors_api.APIError" title="spanclient.errors_api.APIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">errors_api.APIError</span></code></a>, and assigning expected HTTP and api error codes.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">BrokenWandError</span><span class="p">(</span><span class="n">errors_api</span><span class="o">.</span><span class="n">APIError</span><span class="p">):</span>
+    <span class="n">http_code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">404</span>
+    <span class="n">api_code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2001</span>
+
+<span class="k">class</span> <span class="nc">HogwartsClient</span><span class="p">(</span><span class="n">SpanClient</span><span class="p">):</span>
+    <span class="n">DEFAULT_HOST_NAME</span> <span class="o">=</span> <span class="s2">&quot;illuscio.mockable.io&quot;</span>
+    <span class="n">DEFAULT_PROTOCOL</span> <span class="o">=</span> <span class="s2">&quot;https&quot;</span>
+
+    <span class="n">API_ERRORS_ADDITIONAL</span> <span class="o">=</span> <span class="p">[</span><span class="n">BrokenWandError</span><span class="p">]</span>
+
+    <span class="nd">@handles</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/spell&quot;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">cast_spell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you are writing both a client and backend together, have a single python package
+with errors and schemas for the API that is used by both the server and client.</p>
+<p>In the case of spanclient and <a class="reference external" href="https://illuscio-dev-spanreed-py.readthedocs-hosted.com/en/latest/">spanserver</a>, both use the same error classes from
+a shared package called <a class="reference external" href="https://illuscio-dev-spantools-py.readthedocs-hosted.com/en/latest/">spantools</a>.</p>
+<p>This strategy ensures that when tweaks occur to an error’s definition, it only has
+to be updated in one place (at least for the python libraries).</p>
+</div>
+</div>
+<div class="section" id="paged-endpoints">
+<h2>Paged Endpoints<a class="headerlink" href="#paged-endpoints" title="Permalink to this headline">¶</a></h2>
+<p>Like with errors, <a class="reference internal" href="api_guide.html#spanclient.SpanClient" title="spanclient.SpanClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpanClient</span></code></a> offers an easy way to deal with paged endpoints
+using <a class="reference external" href="https://illuscio-dev-spanreed-py.readthedocs-hosted.com/en/latest/quickstart.html#paging">spanserver’s paging convention</a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@handles</span><span class="o">.</span><span class="n">paged</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="nd">@handles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/wizards&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">list_wizards</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">limit=2</span></code> sets the <code class="docutils literal notranslate"><span class="pre">'paging-limit'</span></code> query parameter to <code class="docutils literal notranslate"><span class="pre">'2'</span></code>, so the server will
+return our data two us in batches of two wizards per request.</p>
+<p>Run it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">for</span> <span class="n">wizard</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">list_wizards</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WIZARD:&quot;</span><span class="p">,</span> <span class="n">wizard</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">WIZARD</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Harry Potter&#39;</span><span class="p">,</span> <span class="s1">&#39;house&#39;</span><span class="p">:</span> <span class="s1">&#39;Gryffindor&#39;</span><span class="p">}</span>
+<span class="n">WIZARD</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Hermione Granger&#39;</span><span class="p">,</span> <span class="s1">&#39;house&#39;</span><span class="p">:</span> <span class="s1">&#39;Gryffindor&#39;</span><span class="p">}</span>
+<span class="n">WIZARD</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Ron Weasley&#39;</span><span class="p">,</span> <span class="s1">&#39;house&#39;</span><span class="p">:</span> <span class="s1">&#39;Gryffindor&#39;</span><span class="p">}</span>
+<span class="n">WIZARD</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Draco Malfoy&#39;</span><span class="p">,</span> <span class="s1">&#39;house&#39;</span><span class="p">:</span> <span class="s1">&#39;Slytherin&#39;</span><span class="p">}</span>
+<span class="n">WIZARD</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Cedric Diggory&#39;</span><span class="p">,</span> <span class="s1">&#39;house&#39;</span><span class="p">:</span> <span class="s1">&#39;Hufflepuff&#39;</span><span class="p">}</span>
+<span class="n">WIZARD</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Luna Lovegood&#39;</span><span class="p">,</span> <span class="s1">&#39;house&#39;</span><span class="p">:</span> <span class="s1">&#39;Ravenclaw&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Our method has been turned into an async iterable! The paging happens seamlessly in the
+background, so even though our wizards are being fetched in groups of two, we get all
+six when iterating through them:</p>
+<p>Paging limit and starting offset can also be set on the request object:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@handles</span><span class="o">.</span><span class="n">paged</span><span class="p">()</span>
+<span class="nd">@handles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/wizards&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">list_wizards</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span> <span class="o">=</span> <span class="n">REQ</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+    <span class="n">req</span><span class="o">.</span><span class="n">paging</span><span class="o">.</span><span class="n">offset_start</span> <span class="o">=</span> <span class="n">skip</span>
+    <span class="n">req</span><span class="o">.</span><span class="n">paging</span><span class="o">.</span><span class="n">limit</span> <span class="o">=</span> <span class="n">batch_size</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="test_utilities.html" class="btn btn-neutral float-right" title="Test Utilities" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="SpanClient" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright &#39;2018, Illuscio&#39;
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
