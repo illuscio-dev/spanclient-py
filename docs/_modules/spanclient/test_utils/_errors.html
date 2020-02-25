@@ -1,0 +1,257 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>spanclient.test_utils._errors &mdash; spanclient 0.2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> spanclient
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_utilities.html">Test Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_guide.html">API Guide</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">spanclient</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>spanclient.test_utils._errors</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for spanclient.test_utils._errors</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">spantools</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ContentDecodeError</span> <span class="k">as</span> <span class="n">ContentDecodeBase</span><span class="p">,</span>
+    <span class="n">ContentEncodeError</span><span class="p">,</span>
+    <span class="n">SpanError</span><span class="p">,</span>
+    <span class="n">ContentTypeUnknownError</span> <span class="k">as</span> <span class="n">ContentTypeUnknownBase</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">aiohttp</span> <span class="kn">import</span> <span class="n">ClientResponse</span>
+
+
+<span class="p">(</span><span class="n">ContentEncodeError</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ResponseValidationError"><a class="viewcode-back" href="../../../api_guide.html#spanclient.ResponseValidationError">[docs]</a><span class="k">class</span> <span class="nc">ResponseValidationError</span><span class="p">(</span><span class="n">SpanError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base Error for Exceptions Thrown by mismatched Responses.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientResponse</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClientResponse</span><span class="p">]</span> <span class="o">=</span> <span class="n">response</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ContentDecodeError"><a class="viewcode-back" href="../../../api_guide.html#spanclient.ContentDecodeError">[docs]</a><span class="k">class</span> <span class="nc">ContentDecodeError</span><span class="p">(</span><span class="n">ResponseValidationError</span><span class="p">,</span> <span class="n">ContentDecodeBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Error decoding response body.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ContentTypeUnknownError"><a class="viewcode-back" href="../../../api_guide.html#spanclient.ContentTypeUnknownError">[docs]</a><span class="k">class</span> <span class="nc">ContentTypeUnknownError</span><span class="p">(</span><span class="n">ResponseValidationError</span><span class="p">,</span> <span class="n">ContentTypeUnknownBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Could not handle unknown content type.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="StatusMismatchError"><a class="viewcode-back" href="../../../api_guide.html#spanclient.StatusMismatchError">[docs]</a><span class="k">class</span> <span class="nc">StatusMismatchError</span><span class="p">(</span><span class="n">ResponseValidationError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Status code does not match expected.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="WrongExceptionError"><a class="viewcode-back" href="../../../api_guide.html#spanclient.WrongExceptionError">[docs]</a><span class="k">class</span> <span class="nc">WrongExceptionError</span><span class="p">(</span><span class="n">ResponseValidationError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Error in headers does not match expected exception.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="DataValidationError"><a class="viewcode-back" href="../../../api_guide.html#spanclient.DataValidationError">[docs]</a><span class="k">class</span> <span class="nc">DataValidationError</span><span class="p">(</span><span class="n">ResponseValidationError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Response data does not match schema.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="DataTypeValidationError"><a class="viewcode-back" href="../../../api_guide.html#spanclient.DataTypeValidationError">[docs]</a><span class="k">class</span> <span class="nc">DataTypeValidationError</span><span class="p">(</span><span class="n">ResponseValidationError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Response data does not match schema.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="TextValidationError"><a class="viewcode-back" href="../../../api_guide.html#spanclient.TextValidationError">[docs]</a><span class="k">class</span> <span class="nc">TextValidationError</span><span class="p">(</span><span class="n">DataValidationError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Response text does not match supplied value.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="HeadersMismatchError"><a class="viewcode-back" href="../../../api_guide.html#spanclient.HeadersMismatchError">[docs]</a><span class="k">class</span> <span class="nc">HeadersMismatchError</span><span class="p">(</span><span class="n">ResponseValidationError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Headers do not match expected values.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ParamsMismatchError"><a class="viewcode-back" href="../../../api_guide.html#spanclient.ParamsMismatchError">[docs]</a><span class="k">class</span> <span class="nc">ParamsMismatchError</span><span class="p">(</span><span class="n">ResponseValidationError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Headers do not match expected values.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="PagingMismatchError"><a class="viewcode-back" href="../../../api_guide.html#spanclient.PagingMismatchError">[docs]</a><span class="k">class</span> <span class="nc">PagingMismatchError</span><span class="p">(</span><span class="n">ResponseValidationError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Paging does not match expected values.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="URLMismatchError"><a class="viewcode-back" href="../../../api_guide.html#spanclient.URLMismatchError">[docs]</a><span class="k">class</span> <span class="nc">URLMismatchError</span><span class="p">(</span><span class="n">ResponseValidationError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Request URL does not match expected url.&quot;&quot;&quot;</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright &#39;2018, Illuscio&#39;
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

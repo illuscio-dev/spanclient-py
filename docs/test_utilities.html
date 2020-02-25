@@ -1,0 +1,522 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Test Utilities &mdash; spanclient 0.2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Guide" href="api_guide.html" />
+    <link rel="prev" title="Quickstart" href="quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> spanclient
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Test Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#patch-an-aiohttp-method">Patch an aiohttp Method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mock-response-bodies">Mock Response Bodies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mock-response-headers">Mock Response Headers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mock-multiple-responses">Mock Multiple Responses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mock-multiple-methods">Mock Multiple Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#validate-requests">Validate Requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configure-mocks">Configure Mocks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api_guide.html">API Guide</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">spanclient</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Test Utilities</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/test_utilities.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="test-utilities">
+<h1>Test Utilities<a class="headerlink" href="#test-utilities" title="Permalink to this headline">¶</a></h1>
+<p>Testing http clients can be a tedious process, as http responses must be mocked.
+The <code class="docutils literal notranslate"><span class="pre">test_util</span></code> sub-package offers some testing utilities for mocking aiohttp
+responses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All examples below make use of the <a class="reference external" href="https://github.com/pytest-dev/pytest-asyncio">pytest-asyncio</a> plugin for natively handling
+async tests.</p>
+</div>
+<div class="section" id="patch-an-aiohttp-method">
+<h2>Patch an aiohttp Method<a class="headerlink" href="#patch-an-aiohttp-method" title="Permalink to this headline">¶</a></h2>
+<p>We can patch an aiohttp method by using <a class="reference internal" href="api_guide.html#spanclient.test_utils.mock_aiohttp" title="spanclient.test_utils.mock_aiohttp"><code class="xref py py-func docutils literal notranslate"><span class="pre">spanclient.test_utils.mock_aiohttp()</span></code></a>,
+and supply <a class="reference internal" href="api_guide.html#spanclient.test_utils.MockResponse" title="spanclient.test_utils.MockResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">spanclient.test_utils.MockResponse</span></code></a> objects to be returned when
+the relevant aiohttp method is invoked.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="nd">@test_utils</span><span class="o">.</span><span class="n">mock_aiohttp</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">resp</span><span class="o">=</span><span class="n">MockResponse</span><span class="p">(</span><span class="mi">200</span><span class="p">))</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_mock_config_multiple</span><span class="p">():</span>
+
+    <span class="k">class</span> <span class="nc">APIClient</span><span class="p">(</span><span class="n">SpanClient</span><span class="p">):</span>
+        <span class="nd">@handles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/names&quot;</span><span class="p">,</span> <span class="n">resp_codes</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">send_200</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientResponse</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">host_name</span><span class="o">=</span><span class="s2">&quot;api-host&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">send_200</span><span class="p">()</span>
+        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">send_200</span><span class="p">()</span>
+        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">send_200</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Mock responses are returned endlessly, so all calls above will succeed.</p>
+</div>
+<div class="section" id="mock-response-bodies">
+<h2>Mock Response Bodies<a class="headerlink" href="#mock-response-bodies" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="nd">@test_utils</span><span class="o">.</span><span class="n">mock_aiohttp</span><span class="p">(</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+    <span class="n">resp</span><span class="o">=</span><span class="n">MockResponse</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="n">_json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;first&quot;</span><span class="p">:</span> <span class="s2">&quot;Harry&quot;</span><span class="p">,</span> <span class="s2">&quot;last&quot;</span><span class="p">:</span> <span class="s2">&quot;Potter&quot;</span><span class="p">})</span>
+<span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_mock_config_multiple</span><span class="p">():</span>
+
+    <span class="k">class</span> <span class="nc">APIClient</span><span class="p">(</span><span class="n">SpanClient</span><span class="p">):</span>
+        <span class="nd">@handles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/names&quot;</span><span class="p">,</span> <span class="n">resp_codes</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">name_fetch</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientResponse</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">host_name</span><span class="o">=</span><span class="s2">&quot;api-host&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">name_fetch</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">name</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;first&quot;</span><span class="p">:</span> <span class="s2">&quot;Harry&quot;</span><span class="p">,</span> <span class="s2">&quot;last&quot;</span><span class="p">:</span> <span class="s2">&quot;Potter&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">'Content-Type'</span></code> header is mocked automatically when using _json, _yaml, or _bson.</p>
+</div>
+<div class="section" id="mock-response-headers">
+<h2>Mock Response Headers<a class="headerlink" href="#mock-response-headers" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="nd">@test_utils</span><span class="o">.</span><span class="n">mock_aiohttp</span><span class="p">(</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+    <span class="n">resp</span><span class="o">=</span><span class="n">MockResponse</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;some-header&quot;</span><span class="p">:</span> <span class="s2">&quot;some-value&quot;</span><span class="p">})</span>
+<span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_mock_config_multiple</span><span class="p">():</span>
+
+    <span class="k">class</span> <span class="nc">APIClient</span><span class="p">(</span><span class="n">SpanClient</span><span class="p">):</span>
+        <span class="nd">@handles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/names&quot;</span><span class="p">,</span> <span class="n">resp_codes</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">send_200</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientResponse</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">host_name</span><span class="o">=</span><span class="s2">&quot;api-host&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">send_200</span><span class="p">()</span>
+        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">send_200</span><span class="p">()</span>
+        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">send_200</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="mock-multiple-responses">
+<h2>Mock Multiple Responses<a class="headerlink" href="#mock-multiple-responses" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="nd">@test_utils</span><span class="o">.</span><span class="n">mock_aiohttp</span><span class="p">(</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+    <span class="n">resp</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">MockResponse</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="n">_json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;first&quot;</span><span class="p">:</span> <span class="s2">&quot;Harry&quot;</span><span class="p">,</span> <span class="s2">&quot;last&quot;</span><span class="p">:</span> <span class="s2">&quot;Potter&quot;</span><span class="p">}),</span>
+        <span class="n">MockResponse</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="n">_json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;first&quot;</span><span class="p">:</span> <span class="s2">&quot;Hermione&quot;</span><span class="p">,</span> <span class="s2">&quot;last&quot;</span><span class="p">:</span> <span class="s2">&quot;Granger&quot;</span><span class="p">}),</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_mock_config_multiple</span><span class="p">():</span>
+
+    <span class="k">class</span> <span class="nc">APIClient</span><span class="p">(</span><span class="n">SpanClient</span><span class="p">):</span>
+        <span class="nd">@handles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/names&quot;</span><span class="p">,</span> <span class="n">resp_codes</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">name_fetch</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientResponse</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">host_name</span><span class="o">=</span><span class="s2">&quot;api-host&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">name_fetch</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">name</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;first&quot;</span><span class="p">:</span> <span class="s2">&quot;Harry&quot;</span><span class="p">,</span> <span class="s2">&quot;last&quot;</span><span class="p">:</span> <span class="s2">&quot;Potter&quot;</span><span class="p">}</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">name_fetch</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">name</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;first&quot;</span><span class="p">:</span> <span class="s2">&quot;Hermione&quot;</span><span class="p">,</span> <span class="s2">&quot;last&quot;</span><span class="p">:</span> <span class="s2">&quot;Granger&quot;</span><span class="p">}</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">name_fetch</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">name</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;first&quot;</span><span class="p">:</span> <span class="s2">&quot;Harry&quot;</span><span class="p">,</span> <span class="s2">&quot;last&quot;</span><span class="p">:</span> <span class="s2">&quot;Potter&quot;</span><span class="p">}</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">name_fetch</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">name</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;first&quot;</span><span class="p">:</span> <span class="s2">&quot;Hermione&quot;</span><span class="p">,</span> <span class="s2">&quot;last&quot;</span><span class="p">:</span> <span class="s2">&quot;Granger&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>When multiple responses are specified, they will be yielded in order, then repeated.</p>
+</div>
+<div class="section" id="mock-multiple-methods">
+<h2>Mock Multiple Methods<a class="headerlink" href="#mock-multiple-methods" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="nd">@test_utils</span><span class="o">.</span><span class="n">mock_aiohttp</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">resp</span><span class="o">=</span><span class="n">MockResponse</span><span class="p">(</span><span class="mi">201</span><span class="p">))</span>
+<span class="nd">@test_utils</span><span class="o">.</span><span class="n">mock_aiohttp</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">resp</span><span class="o">=</span><span class="n">MockResponse</span><span class="p">(</span><span class="mi">200</span><span class="p">))</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_mock_config_multiple</span><span class="p">():</span>
+
+    <span class="k">class</span> <span class="nc">APIClient</span><span class="p">(</span><span class="n">SpanClient</span><span class="p">):</span>
+        <span class="nd">@handles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/test&quot;</span><span class="p">,</span> <span class="n">resp_codes</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">send_200</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientResponse</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="nd">@handles</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/test&quot;</span><span class="p">,</span> <span class="n">resp_codes</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">post_201</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientResponse</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">host_name</span><span class="o">=</span><span class="s2">&quot;api-host&quot;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">send_200</span><span class="p">()</span>
+        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">send_200</span><span class="p">()</span>
+        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">send_200</span><span class="p">()</span>
+
+        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post_201</span><span class="p">()</span>
+        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post_201</span><span class="p">()</span>
+        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post_201</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="validate-requests">
+<h2>Validate Requests<a class="headerlink" href="#validate-requests" title="Permalink to this headline">¶</a></h2>
+<p>Use <a class="reference internal" href="api_guide.html#spanclient.test_utils.RequestValidator" title="spanclient.test_utils.RequestValidator"><code class="xref py py-class docutils literal notranslate"><span class="pre">spanclient.test_utils.RequestValidator</span></code></a> to validate the values passed into
+aiohttp methods.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">VALIDATOR_TRIGGERED</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">set</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">validate_name_post</span><span class="p">(</span><span class="n">validator</span><span class="p">:</span> <span class="n">RequestValidator</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">MockResponse</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">VALIDATOR_TRIGGERED</span>
+    <span class="n">VALIDATOR_TRIGGERED</span><span class="p">[</span><span class="s2">&quot;set&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">assert</span> <span class="n">validator</span><span class="o">.</span><span class="n">req_data_decoded</span> <span class="o">==</span> <span class="n">NameSchema</span><span class="p">()</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;first&quot;</span><span class="p">:</span> <span class="s2">&quot;Harry&quot;</span><span class="p">,</span> <span class="s2">&quot;last&quot;</span><span class="p">:</span> <span class="s2">&quot;Potter&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="nd">@test_utils</span><span class="o">.</span><span class="n">mock_aiohttp</span><span class="p">(</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+    <span class="n">resp</span><span class="o">=</span><span class="n">test_utils</span><span class="o">.</span><span class="n">MockResponse</span><span class="p">(</span>
+        <span class="n">status</span><span class="o">=</span><span class="mi">201</span><span class="p">,</span> <span class="n">_json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">UUID1</span><span class="p">),</span> <span class="s2">&quot;first&quot;</span><span class="p">:</span> <span class="s2">&quot;Harry&quot;</span><span class="p">,</span> <span class="s2">&quot;last&quot;</span><span class="p">:</span> <span class="s2">&quot;Potter&quot;</span><span class="p">}</span>
+    <span class="p">),</span>
+    <span class="n">req_validator</span><span class="o">=</span><span class="n">test_utils</span><span class="o">.</span><span class="n">RequestValidator</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;http://api-host/names/</span><span class="si">{UUID1}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Accept&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span> <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">},</span>
+        <span class="n">media</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;first&quot;</span><span class="p">:</span> <span class="s2">&quot;Harry&quot;</span><span class="p">,</span> <span class="s2">&quot;last&quot;</span><span class="p">:</span> <span class="s2">&quot;Potter&quot;</span><span class="p">},</span>
+        <span class="n">custom_hook</span><span class="o">=</span><span class="n">validate_name_post</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_req_validation_client</span><span class="p">():</span>
+
+    <span class="k">class</span> <span class="nc">APIClient</span><span class="p">(</span><span class="n">SpanClient</span><span class="p">):</span>
+        <span class="nd">@handles</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="s2">&quot;/names/</span><span class="si">{name_id}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">req_schema</span><span class="o">=</span><span class="n">NameIDSchema</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,)),</span>
+            <span class="n">query_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Accept&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">},</span>
+            <span class="n">resp_codes</span><span class="o">=</span><span class="mi">201</span><span class="p">,</span>
+            <span class="n">resp_schema</span><span class="o">=</span><span class="n">NameIDSchema</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">name_fetch</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">name_id</span><span class="p">:</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NameID</span><span class="p">:</span>
+            <span class="n">req</span><span class="o">.</span><span class="n">media</span> <span class="o">=</span> <span class="n">Name</span><span class="p">(</span><span class="s2">&quot;Harry&quot;</span><span class="p">,</span> <span class="s2">&quot;Potter&quot;</span><span class="p">)</span>
+            <span class="n">req</span><span class="o">.</span><span class="n">path_params</span><span class="p">[</span><span class="s2">&quot;name_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name_id</span>
+
+    <span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">host_name</span><span class="o">=</span><span class="s2">&quot;api-host&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+
+        <span class="k">assert</span> <span class="n">TestSpanClient</span><span class="o">.</span><span class="n">VALIDATOR_TRIGGERED</span> <span class="ow">is</span> <span class="kc">False</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">name_fetch</span><span class="p">(</span><span class="n">TestSpanClient</span><span class="o">.</span><span class="n">UUID1</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">name</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">TestSpanClient</span><span class="o">.</span><span class="n">UUID1</span>
+        <span class="k">assert</span> <span class="n">name</span><span class="o">.</span><span class="n">first</span> <span class="o">==</span> <span class="s2">&quot;Harry&quot;</span>
+        <span class="k">assert</span> <span class="n">name</span><span class="o">.</span><span class="n">last</span> <span class="o">==</span> <span class="s2">&quot;Potter&quot;</span>
+
+        <span class="k">assert</span> <span class="n">VALIDATOR_TRIGGERED</span><span class="p">[</span><span class="s2">&quot;set&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>Just like responses, multiple validation requests can be set which will be endlessly
+iterated through.</p>
+</div>
+<div class="section" id="configure-mocks">
+<h2>Configure Mocks<a class="headerlink" href="#configure-mocks" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="api_guide.html#spanclient.test_utils.MockConfig" title="spanclient.test_utils.MockConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">spanclient.test_utils.MockConfig</span></code></a> instances will be passed into and
+<code class="docutils literal notranslate"><span class="pre">{method}_config</span> <span class="pre">=</span> <span class="pre">None</span></code> params of the test for configuration during runtime.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="nd">@test_utils</span><span class="o">.</span><span class="n">mock_aiohttp</span><span class="p">(</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+    <span class="n">resp</span><span class="o">=</span><span class="p">[</span><span class="n">MockResponse</span><span class="p">(</span><span class="mi">200</span><span class="p">),</span> <span class="n">MockResponse</span><span class="p">(</span><span class="mi">201</span><span class="p">)],</span>
+    <span class="n">req_validator</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">test_utils</span><span class="o">.</span><span class="n">RequestValidator</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="n">MimeType</span><span class="o">.</span><span class="n">JSON</span><span class="p">),</span>
+        <span class="n">test_utils</span><span class="o">.</span><span class="n">RequestValidator</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="n">MimeType</span><span class="o">.</span><span class="n">JSON</span><span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_mock_config_pass_validator</span><span class="p">(</span><span class="n">get_config</span><span class="p">:</span> <span class="n">MockConfig</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">APIClient</span><span class="p">(</span><span class="n">SpanClient</span><span class="p">):</span>
+        <span class="nd">@handles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/names&quot;</span><span class="p">,</span> <span class="n">resp_codes</span><span class="o">=</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">201</span><span class="p">))</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">name_fetch</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">media</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientResponse</span><span class="p">:</span>
+            <span class="n">req</span><span class="o">.</span><span class="n">media</span> <span class="o">=</span> <span class="n">media</span>
+
+    <span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">host_name</span><span class="o">=</span><span class="s2">&quot;api-host&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+
+        <span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;value1&quot;</span><span class="p">}</span>
+        <span class="n">data2</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;value2&quot;</span><span class="p">}</span>
+
+        <span class="n">get_config</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mock_json</span><span class="p">(</span><span class="n">data1</span><span class="p">)</span>
+        <span class="n">get_config</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">mock_json</span><span class="p">(</span><span class="n">data2</span><span class="p">)</span>
+
+        <span class="n">get_config</span><span class="o">.</span><span class="n">req_validator</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">media</span> <span class="o">=</span> <span class="n">data1</span>
+        <span class="n">get_config</span><span class="o">.</span><span class="n">req_validator</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">media</span> <span class="o">=</span> <span class="n">data2</span>
+
+        <span class="n">data_return</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">name_fetch</span><span class="p">(</span><span class="n">data1</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">data_return</span> <span class="o">==</span> <span class="n">data1</span>
+
+        <span class="n">data_return</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">name_fetch</span><span class="p">(</span><span class="n">data2</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">data_return</span> <span class="o">==</span> <span class="n">data2</span>
+</pre></div>
+</div>
+<p>One config is passed per method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<span class="nd">@test_utils</span><span class="o">.</span><span class="n">mock_aiohttp</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">resp</span><span class="o">=</span><span class="n">MockResponse</span><span class="p">(</span><span class="mi">200</span><span class="p">))</span>
+<span class="nd">@test_utils</span><span class="o">.</span><span class="n">mock_aiohttp</span><span class="p">(</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+    <span class="n">resp</span><span class="o">=</span><span class="n">MockResponse</span><span class="p">(</span><span class="mi">201</span><span class="p">),</span>
+    <span class="n">req_validator</span><span class="o">=</span><span class="n">RequestValidator</span><span class="p">(),</span>
+<span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_mock_config_multiple</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">get_config</span><span class="p">:</span> <span class="n">MockConfig</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">post_config</span><span class="p">:</span> <span class="n">MockConfig</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">):</span>
+    <span class="k">class</span> <span class="nc">APIClient</span><span class="p">(</span><span class="n">SpanClient</span><span class="p">):</span>
+        <span class="nd">@handles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/names&quot;</span><span class="p">,</span> <span class="n">resp_codes</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">name_fetch</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientResponse</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="nd">@handles</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/names&quot;</span><span class="p">,</span> <span class="n">resp_codes</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">name_create</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">media</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientResponse</span><span class="p">:</span>
+            <span class="n">req</span><span class="o">.</span><span class="n">media</span> <span class="o">=</span> <span class="n">media</span>
+
+    <span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">host_name</span><span class="o">=</span><span class="s2">&quot;api-host&quot;</span><span class="p">)</span>
+    <span class="n">name_data</span><span class="o">=</span> <span class="p">{</span><span class="s2">&quot;first&quot;</span><span class="p">:</span> <span class="s2">&quot;harry&quot;</span><span class="p">,</span> <span class="s2">&quot;last&quot;</span><span class="p">:</span> <span class="s2">&quot;potter&quot;</span><span class="p">}</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+
+        <span class="n">get_config</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">media</span> <span class="o">==</span> <span class="n">name_data</span>
+
+        <span class="n">post_config</span><span class="o">.</span><span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">media</span> <span class="o">=</span> <span class="n">name_data</span>
+        <span class="n">post_config</span><span class="o">.</span><span class="n">req_validator</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">media</span> <span class="o">=</span> <span class="n">name_data</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">name_fetch</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">name</span> <span class="o">==</span> <span class="n">name_data</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">name_create</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">name</span> <span class="o">==</span> <span class="n">name_data</span>
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">MockConfig</span></code> parameters must have a default value or pytest will interpret
+them as expected <a class="reference external" href="https://docs.pytest.org/en/latest/fixture.html">fixtures</a> for the given test.</p>
+<p>None is not a required value for the default, but it is a convenient one.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="api_guide.html" class="btn btn-neutral float-right" title="API Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="Quickstart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright &#39;2018, Illuscio&#39;
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

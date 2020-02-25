@@ -1,0 +1,333 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>spanclient._request_obj &mdash; spanclient 0.2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> spanclient
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../test_utilities.html">Test Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_guide.html">API Guide</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">spanclient</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>spanclient._request_obj</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for spanclient._request_obj</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">spantools</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">encode_content</span><span class="p">,</span>
+    <span class="n">MimeType</span><span class="p">,</span>
+    <span class="n">convert_params_headers</span><span class="p">,</span>
+    <span class="n">PagingReq</span><span class="p">,</span>
+    <span class="n">ContentTypeUnknownError</span> <span class="k">as</span> <span class="n">ContentTypeUnknownBase</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">._handle_responses</span> <span class="kn">import</span> <span class="n">handle_response_aio</span>
+<span class="kn">from</span> <span class="nn">._response_data</span> <span class="kn">import</span> <span class="n">ResponseData</span>
+<span class="kn">from</span> <span class="nn">.test_utils</span> <span class="kn">import</span> <span class="n">ContentTypeUnknownError</span>
+
+
+<div class="viewcode-block" id="PagingReqClient"><a class="viewcode-back" href="../../api_guide.html#spanclient.PagingReqClient">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">PagingReqClient</span><span class="p">(</span><span class="n">PagingReq</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Paging info for requests.&quot;&quot;&quot;</span>
+
+    <span class="n">max_pages</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="sd">&quot;&quot;&quot;Maximum number of pages to return before halting.&quot;&quot;&quot;</span>
+    <span class="n">page_to_fetch</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The page that will be fetched by this request. This is supplied as information for</span>
+<span class="sd">    the user.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">offset_start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="sd">&quot;&quot;&quot;Where to start the offset from if not defined in the decorator.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ClientRequest"><a class="viewcode-back" href="../../api_guide.html#spanclient.ClientRequest">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ClientRequest</span><span class="p">:</span>
+    <span class="n">client</span><span class="p">:</span> <span class="s2">&quot;SpanClient&quot;</span>
+    <span class="sd">&quot;&quot;&quot;The aiohttp.ClientSession to execute the request with&quot;&quot;&quot;</span>
+    <span class="n">endpoint_settings</span><span class="p">:</span> <span class="s2">&quot;_EndpointSettings&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Endpoint params for the endpoint of the request.&quot;&quot;&quot;</span>
+    <span class="n">path_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Keyword values for endpoint pattern.&quot;&quot;&quot;</span>
+    <span class="n">query_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Additional params to add to this request url.&quot;&quot;&quot;</span>
+    <span class="n">projection</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Projection settings for response body trimming. Added to query params with</span>
+<span class="sd">    ``&#39;project.{value}&#39;`` prefix.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Additional HTTP headers to send with this request.&quot;&quot;&quot;</span>
+    <span class="n">media</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;Media data to be serialized for send.&quot;&quot;&quot;</span>
+    <span class="n">mimetype_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">MimeType</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;Mimetype value to use on request.&quot;&quot;&quot;</span>
+    <span class="n">mimetype_accept</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">MimeType</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;Mimetype value to use on request.&quot;&quot;&quot;</span>
+    <span class="n">update_obj</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Current object which represents response payload. Will be updated in-place with</span>
+<span class="sd">    response data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">executed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="sd">&quot;&quot;&quot;Whether this request has been executed.&quot;&quot;&quot;</span>
+    <span class="n">return_info</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Whether to return full info instead of loaded / decoded body.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_paging</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PagingReqClient</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">paging</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PagingReqClient</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paging</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Handler is not paged&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paging</span>
+
+<div class="viewcode-block" id="ClientRequest.execute"><a class="viewcode-back" href="../../api_guide.html#spanclient.ClientRequest.execute">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResponseData</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Executes request and handles response from spanreed endpoint.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint_settings</span><span class="o">.</span><span class="n">query_params</span><span class="p">)</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query_params</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">projection</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;project.&quot;</span> <span class="o">+</span> <span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">convert_params_headers</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paging</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_paging</span><span class="o">.</span><span class="n">offset</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paging</span><span class="o">.</span><span class="n">offset_start</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;paging-offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_paging</span><span class="o">.</span><span class="n">offset</span><span class="p">)</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;paging-limit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_paging</span><span class="o">.</span><span class="n">limit</span><span class="p">)</span>
+
+        <span class="n">headers</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint_settings</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
+        <span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
+        <span class="n">convert_params_headers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mimetype_accept</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Accept&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MimeType</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mimetype_accept</span><span class="p">)</span>
+
+        <span class="n">base_url</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{self.client.protocol}</span><span class="s2">://</span><span class="si">{self.client.host_name}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{self.endpoint_settings.endpoint}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">base_url</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">path_params</span><span class="p">)</span>
+
+        <span class="n">req_schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">endpoint_settings</span><span class="o">.</span><span class="n">req_schema</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">encode_content</span><span class="p">(</span>
+                <span class="n">content</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">media</span><span class="p">,</span>
+                <span class="n">mimetype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mimetype_send</span><span class="p">,</span>
+                <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+                <span class="n">data_schema</span><span class="o">=</span><span class="n">req_schema</span><span class="p">,</span>
+                <span class="n">encoders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_ENCODERS</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">ContentTypeUnknownBase</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ContentTypeUnknownError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">),</span> <span class="n">response</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># allow for method to be passed in caps.</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">endpoint_settings</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">method_func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">method_func</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">executed</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="k">await</span> <span class="n">handle_response_aio</span><span class="p">(</span>
+            <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">,</span>
+            <span class="n">valid_status_codes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint_settings</span><span class="o">.</span><span class="n">resp_codes</span><span class="p">,</span>
+            <span class="n">data_schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint_settings</span><span class="o">.</span><span class="n">resp_schema</span><span class="p">,</span>
+            <span class="n">api_errors_additional</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">api_error_index</span><span class="p">,</span>
+            <span class="n">current_data_object</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">update_obj</span><span class="p">,</span>
+            <span class="n">data_object_updater</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint_settings</span><span class="o">.</span><span class="n">data_updater</span><span class="p">,</span>
+            <span class="n">decoders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_DECODERS</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<span class="n">typing_help</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">if</span> <span class="n">typing_help</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">._endpoint_wrapper</span> <span class="kn">import</span> <span class="n">_EndpointSettings</span>
+    <span class="kn">from</span> <span class="nn">._client</span> <span class="kn">import</span> <span class="n">SpanClient</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright &#39;2018, Illuscio&#39;
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
