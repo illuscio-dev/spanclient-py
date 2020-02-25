@@ -1,0 +1,330 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>spanclient.test_utils._patch_aio &mdash; spanclient 0.2.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> spanclient
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_utilities.html">Test Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_guide.html">API Guide</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">spanclient</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>spanclient.test_utils._patch_aio</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for spanclient.test_utils._patch_aio</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">aiohttp</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">asynctest</span> <span class="kn">import</span> <span class="n">patch</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Generator</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">MutableMapping</span><span class="p">,</span>
+    <span class="n">Sequence</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">TypeVar</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">._mock_response</span> <span class="kn">import</span> <span class="n">MockResponse</span>
+<span class="kn">from</span> <span class="nn">._req_validator</span> <span class="kn">import</span> <span class="n">RequestValidator</span>
+
+<span class="n">_ResponseListType</span> <span class="o">=</span> <span class="n">List</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">MockResponse</span><span class="p">]]</span>
+<span class="n">_ValidatorListType</span> <span class="o">=</span> <span class="n">List</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">RequestValidator</span><span class="p">]]</span>
+
+<span class="n">_ResponseType</span> <span class="o">=</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">MockResponse</span><span class="p">,</span> <span class="n">_ResponseListType</span><span class="p">]]</span>
+<span class="n">_ValidatorType</span> <span class="o">=</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">RequestValidator</span><span class="p">,</span> <span class="n">_ValidatorListType</span><span class="p">]]</span>
+<span class="n">_MockConfigIterType</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">[</span>
+    <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">MockResponse</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RequestValidator</span><span class="p">]],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="MockConfig"><a class="viewcode-back" href="../../../api_guide.html#spanclient.test_utils.MockConfig">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">MockConfig</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Configuration of aiohttp mocks for single http method during a test. Passed into</span>
+<span class="sd">    test through ``{method}_config = None`` keyword-only parameter.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">resp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_ResponseListType</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;List of response objects to return.&quot;&quot;&quot;</span>
+    <span class="n">req_validator</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_ValidatorListType</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;List of validators to cycle through to validate aiohttp method parameters.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_MockConfigIterType</span><span class="p">:</span>
+        <span class="n">mock_resp_gen</span> <span class="o">=</span> <span class="n">_endless_generator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resp</span><span class="p">)</span>
+        <span class="n">req_validator_gen</span> <span class="o">=</span> <span class="n">_endless_generator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">req_validator</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+        <span class="k">for</span> <span class="n">req_mock</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">mock_resp_gen</span><span class="p">,</span> <span class="n">req_validator_gen</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">req_mock</span></div>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">_mock_aiohttp_method</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">:</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">,</span>
+    <span class="n">mock_config</span><span class="p">:</span> <span class="n">MockConfig</span><span class="p">,</span>
+    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">params</span><span class="p">:</span> <span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="n">headers</span><span class="p">:</span> <span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MockResponse</span><span class="p">:</span>
+    <span class="c1"># NOTE ON ARGS: params and headers would normally have a default of None, but our</span>
+    <span class="c1"># client framework ALWAYS passes a dict, even if it is emtpy</span>
+    <span class="n">mock_resp</span><span class="p">,</span> <span class="n">req_validator</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">mock_config</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+    <span class="k">if</span> <span class="n">req_validator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">req_validator</span><span class="o">.</span><span class="n">validate_request</span><span class="p">(</span>
+            <span class="n">req_url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span>
+            <span class="n">req_params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">req_headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+            <span class="n">req_data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">mock_response</span><span class="o">=</span><span class="n">mock_resp</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mock_resp</span>
+
+
+<span class="n">GenType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;GenType&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_endless_generator</span><span class="p">(</span>
+    <span class="n">seq</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">GenType</span><span class="p">]]],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">GenType</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">seq</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">item</span>
+
+
+<div class="viewcode-block" id="mock_aiohttp"><a class="viewcode-back" href="../../../api_guide.html#spanclient.test_utils.mock_aiohttp">[docs]</a><span class="k">def</span> <span class="nf">mock_aiohttp</span><span class="p">(</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">resp</span><span class="p">:</span> <span class="n">_ResponseType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">req_validator</span><span class="p">:</span> <span class="n">_ValidatorType</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorator for patching aio_http method with request validator that returns a</span>
+<span class="sd">    MockResponse.</span>
+
+<span class="sd">    :param method: HTTP method to replace: GET, POST, etc.</span>
+<span class="sd">    :param resp: Mock response object(s) to return. Objects are returned</span>
+<span class="sd">        endlessly, so if one mock response is passed, it will be returned every time</span>
+<span class="sd">        the aiohttp method is invoked, but if three are passed, they will be rotated</span>
+<span class="sd">        through like so: 1, 2, 3, 1, 2, 3, 1, ...</span>
+<span class="sd">    :param req_validator: Validator(s) to check passed aiohttp params. Like mock</span>
+<span class="sd">        responses, validators are cycled through endlessly to check each response.</span>
+<span class="sd">    :return: Pytest decorator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">method</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="n">MockResponse</span><span class="p">):</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="p">[</span><span class="n">resp</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">req_validator</span><span class="p">,</span> <span class="n">RequestValidator</span><span class="p">):</span>
+        <span class="n">req_validator</span> <span class="o">=</span> <span class="p">[</span><span class="n">req_validator</span><span class="p">]</span>
+
+    <span class="n">mock_config</span> <span class="o">=</span> <span class="n">MockConfig</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="n">req_validator</span><span class="p">)</span>
+
+    <span class="n">mock_func</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partialmethod</span><span class="p">(</span><span class="n">_mock_aiohttp_method</span><span class="p">,</span> <span class="p">(</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">mock_config</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">test_method</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+        <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">test_method</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapped_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+            <span class="n">config_key</span> <span class="o">=</span> <span class="n">method</span> <span class="o">+</span> <span class="s2">&quot;_config&quot;</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="n">config_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">mock_config</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="n">test_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">config_key</span><span class="p">)</span>
+
+                <span class="n">check_message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;got an unexpected keyword argument &#39;</span><span class="si">{config_key}</span><span class="s2">&#39;&quot;</span>
+                <span class="k">if</span> <span class="n">check_message</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="k">await</span> <span class="n">test_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">error</span>
+
+        <span class="k">return</span> <span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">mock_func</span><span class="p">)(</span><span class="n">wrapped_method</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">decorator</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright &#39;2018, Illuscio&#39;
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

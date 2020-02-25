@@ -1,0 +1,407 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>spanclient.test_utils._req_validator &mdash; spanclient 0.2.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> spanclient
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_utilities.html">Test Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_guide.html">API Guide</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">spanclient</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>spanclient.test_utils._req_validator</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for spanclient.test_utils._req_validator</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span> <span class="nn">bson.raw_bson</span> <span class="kn">import</span> <span class="n">RawBSONDocument</span>
+
+<span class="kn">from</span> <span class="nn">spantools</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">MimeType</span><span class="p">,</span>
+    <span class="n">MimeTypeTolerant</span><span class="p">,</span>
+    <span class="n">decode_content</span><span class="p">,</span>
+    <span class="n">convert_params_headers</span><span class="p">,</span>
+    <span class="n">ContentTypeUnknownError</span><span class="p">,</span>
+    <span class="n">NoContentError</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">._errors</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">HeadersMismatchError</span><span class="p">,</span>
+    <span class="n">URLMismatchError</span><span class="p">,</span>
+    <span class="n">DataValidationError</span><span class="p">,</span>
+    <span class="n">DataTypeValidationError</span><span class="p">,</span>
+    <span class="n">ParamsMismatchError</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">._mock_response</span> <span class="kn">import</span> <span class="n">MockResponse</span>
+
+
+<span class="n">ReqMappingType</span> <span class="o">=</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
+
+
+<div class="viewcode-block" id="RequestValidator"><a class="viewcode-back" href="../../../api_guide.html#spanclient.test_utils.RequestValidator">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">RequestValidator</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Used to validate aiohttp method params.&quot;&quot;&quot;</span>
+
+    <span class="n">url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Expected URL value, does not include any query params, but should include path</span>
+<span class="sd">    params.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">headers</span><span class="p">:</span> <span class="n">ReqMappingType</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Expected request header keys and values. Error is only thrown if a header is missing</span>
+<span class="sd">    or incorrect, NOT if there are other headers present. These are the minimum</span>
+<span class="sd">    required headers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">params</span><span class="p">:</span> <span class="n">ReqMappingType</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Expected URL query param keys and values. Error is only thrown if a param is</span>
+<span class="sd">    missing or incorrect, NOT if there are other params present. These are the minimum</span>
+<span class="sd">    required headers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">content_type</span><span class="p">:</span> <span class="n">MimeTypeTolerant</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;Expected value of ``&#39;Content-Type&#39;`` header.&quot;&quot;&quot;</span>
+    <span class="n">media</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;Expected media.&quot;&quot;&quot;</span>
+
+    <span class="n">custom_hook</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="s2">&quot;RequestValidator&quot;</span><span class="p">,</span> <span class="n">MockResponse</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;Custom validation callable.&quot;&quot;&quot;</span>
+
+    <span class="n">req_url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">req_params</span><span class="p">:</span> <span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">req_headers</span><span class="p">:</span> <span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">req_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">req_data_decoded</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">convert_params_headers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
+        <span class="n">convert_params_headers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">content_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">MimeType</span><span class="o">.</span><span class="n">add_to_headers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">content_type</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">validate_request</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">req_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">req_headers</span><span class="p">:</span> <span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">req_params</span><span class="p">:</span> <span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">req_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bytes</span><span class="p">],</span>
+        <span class="n">mock_response</span><span class="p">:</span> <span class="n">MockResponse</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">req_url</span> <span class="o">=</span> <span class="n">req_url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">req_params</span> <span class="o">=</span> <span class="n">req_params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">req_headers</span> <span class="o">=</span> <span class="n">req_headers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">req_data</span> <span class="o">=</span> <span class="n">req_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">req_data_decoded</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">validate_url</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validate_headers</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validate_params</span><span class="p">()</span>
+
+        <span class="n">mimetype</span> <span class="o">=</span> <span class="n">MimeType</span><span class="o">.</span><span class="n">from_headers</span><span class="p">(</span><span class="n">req_headers</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validate_media</span><span class="p">(</span><span class="n">mimetype</span><span class="o">=</span><span class="n">mimetype</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validate_media_type</span><span class="p">(</span><span class="n">mimetype</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_hook</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">custom_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_response</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">validate_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">req_url</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span>
+        <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">URLMismatchError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Expected: </span><span class="si">{self.url}</span><span class="s2">, got </span><span class="si">{self.req_url}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="kc">None</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">validate_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">check_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">req_headers</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">HeadersMismatchError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{key}</span><span class="s2">&#39; not found in request headers&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="kc">None</span>
+                <span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">check_value</span> <span class="o">==</span> <span class="n">value</span>
+            <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">HeadersMismatchError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Header &#39;</span><span class="si">{key}</span><span class="s2">&#39; has value of &#39;</span><span class="si">{check_value}</span><span class="s2">&#39;, expected &#39;</span><span class="si">{value}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
+                    <span class="n">response</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">validate_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">check_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">req_params</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ParamsMismatchError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{key}</span><span class="s2">&#39; not found in request params&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="kc">None</span>
+                <span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">check_value</span> <span class="o">==</span> <span class="n">value</span>
+            <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ParamsMismatchError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Param &#39;</span><span class="si">{key}</span><span class="s2">&#39; has value of &#39;</span><span class="si">{check_value}</span><span class="s2">&#39;, expected &#39;</span><span class="si">{value}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
+                    <span class="n">response</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">validate_media_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mimetype</span><span class="p">:</span> <span class="n">MimeTypeTolerant</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">req_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">decoded</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">decode_content</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">req_data</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="n">mimetype</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ContentTypeUnknownError</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">except</span> <span class="n">NoContentError</span><span class="p">:</span>
+            <span class="c1"># This used to return None, now we need to catch the error.</span>
+            <span class="n">decoded</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DataTypeValidationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Request content was not expected type </span><span class="si">{mimetype}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="kc">None</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">req_data_decoded</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">req_data_decoded</span> <span class="o">=</span> <span class="n">decoded</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_cast_bson_to_dict</span><span class="p">(</span><span class="n">check_media</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">check_media</span><span class="p">,</span> <span class="n">RawBSONDocument</span><span class="p">):</span>
+            <span class="n">check_media</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">check_media</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">check_media</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">first</span> <span class="o">=</span> <span class="n">check_media</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">RawBSONDocument</span><span class="p">):</span>
+                <span class="n">check_media</span> <span class="o">=</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">check_media</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">check_media</span>
+
+    <span class="k">def</span> <span class="nf">validate_media</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mimetype</span><span class="p">:</span> <span class="n">MimeTypeTolerant</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">media</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">req_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DataValidationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Expected: {repr(self.media)}, got </span><span class="si">{None}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="kc">None</span>
+            <span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">req_data_decoded</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">decode_content</span><span class="p">(</span>
+                <span class="n">content</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">req_data</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="n">mimetype</span><span class="p">,</span> <span class="n">allow_sniff</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">ContentTypeUnknownError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="c1"># This handles casting bson docs (which are not comparable) to dicts / lists</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">req_data_decoded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cast_bson_to_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">req_data_decoded</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">media</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">req_data</span><span class="p">)):</span>
+            <span class="n">check_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">req_data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">check_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">req_data_decoded</span>
+
+        <span class="c1"># Check the media</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">check_data</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">media</span>
+        <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DataValidationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Expected: {repr(self.media)}, got {repr(check_data)}&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="kc">None</span>
+            <span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright &#39;2018, Illuscio&#39;
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

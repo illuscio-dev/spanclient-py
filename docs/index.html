@@ -1,0 +1,334 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>SpanClient &mdash; spanclient 0.2.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quickstart" href="quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> spanclient
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_utilities.html">Test Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_guide.html">API Guide</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">spanclient</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>SpanClient</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="module-spanclient"></span><div class="section" id="spanclient">
+<h1>SpanClient<a class="headerlink" href="#spanclient" title="Permalink to this headline">¶</a></h1>
+<p>Many frameworks exist for quickly declaring REST-ful API’s, but few exist for quickly
+declaring clients to consume them.</p>
+<p>A good, pre-built client to make interacting with your API painless goes a long way
+toward your API’s usability. SpanClient seeks to make declaring a high-level client as
+painless as declaring the services that feed it.</p>
+<p>Lets declare a small client can interact with an API that stores names of people. We
+need to make two methods: one that fetches a name based on a UUID, and one that posts
+a new name to be assigned a uuid:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">marshmallow</span>
+<span class="kn">from</span> <span class="nn">spanclient</span> <span class="kn">import</span> <span class="n">SpanClient</span><span class="p">,</span> <span class="n">handles</span><span class="p">,</span> <span class="n">MimeType</span><span class="p">,</span> <span class="n">ClientRequest</span>
+
+
+<span class="k">class</span> <span class="nc">NameSchema</span><span class="p">(</span><span class="n">marshmallow</span><span class="o">.</span><span class="n">Schema</span><span class="p">):</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">marshmallow</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">UUID</span><span class="p">()</span>
+    <span class="n">first</span> <span class="o">=</span> <span class="n">marshmallow</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Str</span><span class="p">()</span>
+    <span class="n">last</span> <span class="o">=</span> <span class="n">marshmallow</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Str</span><span class="p">()</span>
+
+<span class="n">REQ</span> <span class="o">=</span> <span class="n">SpanClient</span><span class="o">.</span><span class="n">REQ</span>
+
+<span class="k">class</span> <span class="nc">MyClient</span><span class="p">(</span><span class="n">SpanClient</span><span class="p">):</span>
+    <span class="n">DEFAULT_HOST_NAME</span> <span class="o">=</span> <span class="s2">&quot;api.names.com&quot;</span>
+    <span class="n">DEFAULT_PROTOCOL</span> <span class="o">=</span> <span class="s2">&quot;https&quot;</span>
+
+    <span class="nd">@handles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="s2">&quot;/names/</span><span class="si">{name_id}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">resp_schema</span><span class="o">=</span><span class="n">NameSchema</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">fetch_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_id</span><span class="p">:</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span><span class="o">=</span><span class="n">REQ</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">req</span><span class="o">.</span><span class="n">path_params</span><span class="p">[</span><span class="s2">&quot;name_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name_id</span>
+
+    <span class="nd">@handles</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="s2">&quot;/names&quot;</span><span class="p">,</span>
+        <span class="n">mimetype_send</span><span class="o">=</span><span class="n">MimeType</span><span class="o">.</span><span class="n">YAML</span><span class="p">,</span>
+        <span class="n">req_schema</span><span class="o">=</span><span class="n">NameSchema</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]),</span>
+        <span class="n">mimetype_accept</span><span class="o">=</span><span class="n">MimeType</span><span class="o">.</span><span class="n">YAML</span><span class="p">,</span>
+        <span class="n">resp_codes</span><span class="o">=</span><span class="mi">201</span><span class="p">,</span>
+        <span class="n">resp_schema</span><span class="o">=</span><span class="n">NameSchema</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">create_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ClientRequest</span><span class="o">=</span><span class="n">REQ</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">req</span><span class="o">.</span><span class="n">update_obj</span> <span class="o">=</span> <span class="n">name</span>
+
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">MyClient</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>That’s all it takes!</p>
+<p>The first method:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Fetches name objects from “www.names.api/names/{name_id}”</p></li>
+<li><p>Uses the passed <code class="docutils literal notranslate"><span class="pre">name_id</span></code> value for the <code class="docutils literal notranslate"><span class="pre">{name_id}</span></code> url path param</p></li>
+<li><p>Loads the response body using <code class="docutils literal notranslate"><span class="pre">NameSchema()</span></code></p></li>
+<li><p>Automatically use the loaded response body as the method’s return value.</p></li>
+</ul>
+</div></blockquote>
+<p>The second method:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Takes in a name object and uses <code class="docutils literal notranslate"><span class="pre">NameSchema(exclude=[&quot;id&quot;])</span></code> to
+serialize the request body as YAML data.</p></li>
+<li><p>Requests YAML data back from the server.</p></li>
+<li><p>Deserialized the response body using <code class="docutils literal notranslate"><span class="pre">NameSchema()</span></code>.</p></li>
+<li><p>Checks that the response code is <code class="docutils literal notranslate"><span class="pre">201</span></code>.</p></li>
+<li><p>Update the existing <code class="docutils literal notranslate"><span class="pre">name</span></code> object in-place with the returned data rather than
+returning a new one.</p></li>
+<li><p>Use the existing name object as the method’s return value.</p></li>
+</ul>
+</div></blockquote>
+<p>Both Methods:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Will raise errors sent back from the server using native python exceptions.</p></li>
+<li><p>Send requests asynchronously using <a class="reference external" href="https://docs.python.org/3/library/asyncio.html">asyncio</a>.</p></li>
+</ul>
+</div></blockquote>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>SpanClient is designed to work with <a class="reference external" href="https://illuscio-dev-spanreed-py.readthedocs-hosted.com/en/latest/">SpanServer</a>, and follows it’s conventions
+for passing errors, paging, and encoding content.</p>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#declare-a-client">Declare a Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#add-a-method">Add a Method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#return-values">Return Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#check-response-code">Check Response Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#handling-response-return">Handling Response / Return</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#request-body">Request Body</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#content-type-encoding">Content-Type Encoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#request-a-content-type">Request a Content-Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#content-type-sniffing">Content-Type Sniffing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#content-type-handlers">Content-Type Handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#path-parameters">Path Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#query-parameters">Query Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#projection-url-params">Projection URL Params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#request-headers">Request Headers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#request-body-schema">Request Body Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#response-body-schema">Response Body Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#update-data-in-place">Update Data In-Place</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#response-errors">Response Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#paged-endpoints">Paged Endpoints</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="test_utilities.html">Test Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="test_utilities.html#patch-an-aiohttp-method">Patch an aiohttp Method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_utilities.html#mock-response-bodies">Mock Response Bodies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_utilities.html#mock-response-headers">Mock Response Headers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_utilities.html#mock-multiple-responses">Mock Multiple Responses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_utilities.html#mock-multiple-methods">Mock Multiple Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_utilities.html#validate-requests">Validate Requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_utilities.html#configure-mocks">Configure Mocks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api_guide.html">API Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_guide.html#spanclient">SpanClient</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_guide.html#clientrequest">ClientRequest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_guide.html#mimetype">MimeType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_guide.html#errors">Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_guide.html#api-errors">API Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_guide.html#testing-utilities">Testing Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_guide.html#testing-errors">Testing Errors</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="quickstart.html" class="btn btn-neutral float-right" title="Quickstart" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright &#39;2018, Illuscio&#39;
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
